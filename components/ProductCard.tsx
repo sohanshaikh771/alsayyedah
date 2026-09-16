@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Product } from "@/lib/products-data";
+import { Product } from "@/lib/products-firestore";
 
 interface ProductCardProps {
   product: Product;

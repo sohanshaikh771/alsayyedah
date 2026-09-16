@@ -4,23 +4,19 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductDetail from "@/components/ProductDetail";
-import { products } from "@/lib/products-data";
+import { getProductBySlug } from "@/lib/products-firestore";
+
+export const revalidate = 0;
 
 interface ProductPageProps {
   params: { slug: string } | Promise<{ slug: string }>;
-}
-
-export async function generateStaticParams() {
-  return products.map((product) => ({
-    slug: product.slug,
-  }));
 }
 
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const resolvedParams = params instanceof Promise ? await params : params;
-  const product = products.find((p) => p.slug === resolvedParams.slug);
+  const product = await getProductBySlug(resolvedParams.slug);
 
   if (!product) {
     return {
@@ -37,7 +33,7 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const resolvedParams = params instanceof Promise ? await params : params;
-  const product = products.find((p) => p.slug === resolvedParams.slug);
+  const product = await getProductBySlug(resolvedParams.slug);
 
   return (
     <div className="min-h-screen flex flex-col bg-cream text-taupe">

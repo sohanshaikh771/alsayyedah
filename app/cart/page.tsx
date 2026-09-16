@@ -2,11 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Trash2, MessageCircle } from "lucide-react";
+import { Trash2, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/lib/cart-store";
-import { BRAND } from "@/lib/constants";
 
 export default function CartPage() {
   const [mounted, setMounted] = useState(false);
@@ -16,15 +15,11 @@ export default function CartPage() {
     setMounted(true);
   }, []);
 
-  const message =
-    "Hi ALSayyedah! I want to order:\n\n" +
-    items
-      .map(
-        (i) =>
-          `• ${i.name} (${i.size}, ${i.color}) x${i.qty} = ₹${i.price * i.qty}`
-      )
-      .join("\n") +
-    `\n\nTotal: ₹${totalPrice()}\n\nPlease confirm.`;
+  const subtotal = totalPrice();
+  const isFreeShipping = subtotal >= 1999;
+  const shippingFee = isFreeShipping ? 0 : 99;
+  const codFee = 49;
+  const total = subtotal + shippingFee + codFee;
 
   return (
     <div className="min-h-screen flex flex-col bg-cream text-taupe">
@@ -36,40 +31,46 @@ export default function CartPage() {
         {!mounted ? (
           <div className="py-20" />
         ) : items.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="text-center py-20 bg-beige/50 rounded-lg border border-sand/40 p-8">
             <h2 className="font-serif text-3xl text-taupe mb-2">
               Your cart is empty
             </h2>
             <p className="text-sm text-taupe/70 mb-6">
-              Start shopping to add items
+              Discover our modest collection and add items to your cart.
             </p>
             <Link
               href="/shop"
-              className="inline-block bg-taupe text-cream px-6 py-3 rounded-md hover:bg-gold transition"
+              className="inline-block bg-taupe text-cream px-6 py-3 rounded-md hover:bg-gold transition font-medium"
             >
               Shop Now
             </Link>
           </div>
         ) : (
-          <div>
+          <div className="space-y-8">
+            {/* Cart Items List */}
             <div className="space-y-4">
               {items.map((item) => (
                 <div
                   key={`${item.productId}-${item.size}-${item.color}`}
-                  className="bg-beige p-4 rounded-md flex gap-4 items-center"
+                  className="bg-beige p-4 sm:p-5 rounded-md flex gap-4 items-center border border-sand/40"
                 >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-20 h-24 object-cover rounded flex-shrink-0"
+                    className="w-20 h-24 object-cover rounded flex-shrink-0 bg-sand/30"
                   />
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-serif text-lg text-taupe">{item.name}</h3>
-                    <p className="text-sm text-taupe/60">
-                      Size: {item.size} • Color: {item.color}
+                    <h3 className="font-serif text-lg text-taupe font-medium truncate">
+                      {item.name}
+                    </h3>
+                    <p className="text-xs text-taupe/70 mt-0.5">
+                      Size: <span className="font-medium text-taupe">{item.size}</span> • Color: <span className="font-medium text-taupe">{item.color}</span>
                     </p>
-                    <p className="font-semibold text-taupe mt-1">₹{item.price}</p>
+                    <p className="font-semibold text-taupe mt-1.5">
+                      ₹{item.price.toLocaleString("en-IN")}
+                    </p>
                     <div className="flex items-center gap-2 mt-2">
                       <button
                         type="button"
@@ -81,12 +82,12 @@ export default function CartPage() {
                             Math.max(1, item.qty - 1)
                           )
                         }
-                        className="w-7 h-7 border border-sand rounded flex items-center justify-center text-taupe hover:border-gold transition"
+                        className="w-7 h-7 border border-sand rounded flex items-center justify-center text-taupe hover:border-gold hover:text-gold transition cursor-pointer"
                         aria-label="Decrease quantity"
                       >
                         −
                       </button>
-                      <span className="text-sm font-semibold text-taupe px-1">
+                      <span className="text-sm font-semibold text-taupe px-1 min-w-6 text-center">
                         {item.qty}
                       </span>
                       <button
@@ -99,7 +100,7 @@ export default function CartPage() {
                             item.qty + 1
                           )
                         }
-                        className="w-7 h-7 border border-sand rounded flex items-center justify-center text-taupe hover:border-gold transition"
+                        className="w-7 h-7 border border-sand rounded flex items-center justify-center text-taupe hover:border-gold hover:text-gold transition cursor-pointer"
                         aria-label="Increase quantity"
                       >
                         +
@@ -112,7 +113,7 @@ export default function CartPage() {
                     onClick={() =>
                       removeItem(item.productId, item.size, item.color)
                     }
-                    className="text-taupe/60 hover:text-red-500 transition p-2"
+                    className="text-taupe/50 hover:text-red-600 transition p-2 cursor-pointer"
                     aria-label="Remove item"
                   >
                     <Trash2 className="w-5 h-5" />
@@ -121,25 +122,67 @@ export default function CartPage() {
               ))}
             </div>
 
-            <div className="border-t border-sand pt-6 mt-8">
-              <div className="flex justify-between text-lg font-semibold mb-6 text-taupe">
-                <span>Total</span>
-                <span>₹{totalPrice()}</span>
+            {/* Order Summary Card */}
+            <div className="bg-beige border border-sand rounded-lg p-6 space-y-4">
+              <h2 className="font-serif text-2xl text-taupe pb-2 border-b border-sand/50">
+                Order Summary
+              </h2>
+
+              <div className="space-y-2.5 text-sm text-taupe/80">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span className="font-medium text-taupe">₹{subtotal.toLocaleString("en-IN")}</span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <div>
+                    <span>Shipping</span>
+                    {!isFreeShipping && (
+                      <p className="text-[11px] text-taupe/60">
+                        Add ₹{(1999 - subtotal).toLocaleString("en-IN")} more for FREE shipping
+                      </p>
+                    )}
+                  </div>
+                  <span className={`font-medium ${isFreeShipping ? "text-emerald-700" : "text-taupe"}`}>
+                    {isFreeShipping ? "FREE" : `₹${shippingFee}`}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <div>
+                    <span>COD Charges</span>
+                    <span className="text-[11px] text-taupe/60 block">Cash on delivery fee</span>
+                  </div>
+                  <span className="font-medium text-taupe">₹{codFee}</span>
+                </div>
+
+                <div className="border-t border-sand/70 pt-3 flex justify-between items-baseline text-taupe">
+                  <span className="text-base font-semibold">Total</span>
+                  <span className="font-serif text-2xl font-bold text-taupe">
+                    ₹{total.toLocaleString("en-IN")}
+                  </span>
+                </div>
               </div>
 
-              <a
-                href={`${BRAND.whatsappLink}?text=${encodeURIComponent(message)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full bg-taupe text-cream py-3 rounded-md hover:bg-gold transition flex items-center justify-center gap-2 font-medium"
-              >
-                <MessageCircle className="w-5 h-5" />
-                <span>Checkout on WhatsApp</span>
-              </a>
+              {/* Actions */}
+              <div className="pt-2 space-y-3">
+                <Link
+                  href="/checkout"
+                  className="w-full bg-taupe text-cream py-3.5 rounded-md hover:bg-gold transition flex items-center justify-center gap-2 font-medium shadow-xs text-center cursor-pointer"
+                >
+                  <span>Proceed to Checkout</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
 
-              <p className="text-xs text-taupe/60 mt-3 text-center">
-                Payment link will be sent on WhatsApp. COD also available.
-              </p>
+                <div className="text-center">
+                  <Link
+                    href="/shop"
+                    className="inline-block text-sm text-taupe/80 hover:text-gold transition font-medium underline underline-offset-4"
+                  >
+                    Continue Shopping
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         )}

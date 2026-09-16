@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Addresses collection
+    match /addresses/{id} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Orders collection
+    match /orders/{orderId} {
+      allow create: if true;
+      allow read: if request.auth != null && 
+        (resource.data.userId == request.auth.uid || request.auth.token.email == "admin@alsayyedah.com");
+      allow update, delete: if request.auth != null;
+    }
+
+    // Products collection
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

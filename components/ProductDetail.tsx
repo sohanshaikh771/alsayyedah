@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { MessageCircle, Minus, Plus, Truck, Banknote, ShieldCheck } from "lucide-react";
-import { Product } from "@/lib/products-data";
+import { Product } from "@/lib/products-firestore";
 import { BRAND } from "@/lib/constants";
 import { useCart } from "@/lib/cart-store";
 

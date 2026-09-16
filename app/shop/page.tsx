@@ -3,7 +3,9 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
-import { products } from "@/lib/products-data";
+import { getAllProducts, getProductsByCategory } from "@/lib/products-firestore";
+
+export const revalidate = 0;
 
 export const metadata = {
   title: "Shop Modest Collection — ALSayyedah",
@@ -43,10 +45,8 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
   const filteredProducts =
     activeCategory === "all"
-      ? products
-      : products.filter(
-          (product) => product.category.toLowerCase() === activeCategory
-        );
+      ? await getAllProducts()
+      : await getProductsByCategory(activeCategory);
 
   const pageTitle =
     activeCategory === "all"

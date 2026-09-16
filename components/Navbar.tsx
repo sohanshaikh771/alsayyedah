@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ShoppingBag, Menu, X, LogOut } from "lucide-react";
+import { ShoppingBag, Menu, X, LogOut, User } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-store";
 
@@ -28,8 +28,6 @@ export default function Navbar() {
     { label: "Hijab", href: "/shop?c=hijab" },
     { label: "About", href: "/about" },
   ];
-
-  const firstName = user?.displayName ? user.displayName.split(" ")[0] : "there";
 
   return (
     <header className="sticky top-0 z-50 bg-cream/90 backdrop-blur-md border-b border-sand">
@@ -87,10 +85,17 @@ export default function Navbar() {
                       Admin
                     </Link>
                   )}
-                  <span className="font-medium">Hi, {firstName}</span>
+                  <Link
+                    href="/account"
+                    className="p-1 text-taupe hover:text-gold transition-colors"
+                    title="My Account"
+                    aria-label="My Account"
+                  >
+                    <User className="w-5 h-5 text-taupe hover:text-gold transition" />
+                  </Link>
                   <button
                     onClick={() => logout()}
-                    className="p-1 text-taupe hover:text-gold transition-colors"
+                    className="p-1 text-taupe hover:text-gold transition-colors cursor-pointer"
                     title="Logout"
                     aria-label="Logout"
                   >
@@ -144,8 +149,7 @@ export default function Navbar() {
           <div className="pt-3 border-t border-sand/60 flex items-center justify-between">
             {user ? (
               <div className="flex items-center justify-between w-full text-taupe">
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium">Hi, {firstName}</span>
+                <div className="flex items-center space-x-3">
                   {isAdmin && (
                     <Link
                       href="/admin"
@@ -155,13 +159,25 @@ export default function Navbar() {
                       Admin
                     </Link>
                   )}
+                  <Link
+                    href="/account"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-1.5 text-sm font-medium text-taupe hover:text-gold transition-colors"
+                    title="My Account"
+                    aria-label="My Account"
+                  >
+                    <User className="w-5 h-5 text-taupe hover:text-gold transition" />
+                    <span>My Account</span>
+                  </Link>
                 </div>
                 <button
                   onClick={() => {
                     logout();
                     setMobileMenuOpen(false);
                   }}
-                  className="flex items-center space-x-1 text-sm text-taupe hover:text-gold transition-colors"
+                  className="flex items-center space-x-1 text-sm text-taupe hover:text-gold transition-colors cursor-pointer"
+                  title="Logout"
+                  aria-label="Logout"
                 >
                   <span>Logout</span>
                   <LogOut className="w-4 h-4" />

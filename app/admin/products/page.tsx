@@ -24,11 +24,11 @@ interface ProductItem {
   images?: string[];
   image?: string;
   featured?: boolean;
-  createdAt?: any;
+  createdAt?: unknown;
 }
 
 export default function AdminProductsPage() {
-  const { user } = useAuth();
+  useAuth();
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -51,10 +51,13 @@ export default function AdminProductsPage() {
           if (a.featured && !b.featured) return -1;
           if (!a.featured && b.featured) return 1;
 
-          const getTime = (val: any) => {
+          const getTime = (val: unknown) => {
             if (!val) return 0;
-            if (typeof val.toMillis === "function") return val.toMillis();
-            if (val.seconds) return val.seconds * 1000;
+            if (typeof val === "object" && val !== null) {
+              const obj = val as Record<string, unknown>;
+              if (typeof obj.toMillis === "function") return (obj.toMillis as () => number)();
+              if (typeof obj.seconds === "number") return obj.seconds * 1000;
+            }
             if (val instanceof Date) return val.getTime();
             return 0;
           };

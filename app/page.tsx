@@ -5,11 +5,13 @@ import { FaInstagram } from "react-icons/fa";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
-import { products } from "@/lib/products-data";
+import { getFeaturedProducts } from "@/lib/products-firestore";
 import { BRAND } from "@/lib/constants";
 
-export default function Home() {
-  const featuredProducts = products.filter((p) => p.featured);
+export const revalidate = 0;
+
+export default async function Home() {
+  const featuredProducts = await getFeaturedProducts();
 
   const categories = [
     { name: "Abaya", slug: "abaya" },
