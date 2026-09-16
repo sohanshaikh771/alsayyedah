@@ -100,7 +100,7 @@ export default function OrderDetailPage() {
 
   const formatFullDate = (createdAt: unknown) => {
     if (!createdAt) return "Recent";
-    const ts = createdAt as any;
+    const ts = createdAt as { toDate?: () => Date; seconds?: number } | null;
     let date: Date | null = null;
     if (typeof ts === "object" && ts !== null) {
       if (typeof ts.toDate === "function") date = ts.toDate();
