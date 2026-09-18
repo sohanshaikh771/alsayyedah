@@ -6,6 +6,7 @@ import ScrollProgress from "@/components/ScrollProgress";
 import BackToTop from "@/components/BackToTop";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import PageTransition from "@/components/PageTransition";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -42,6 +43,33 @@ export default function RootLayout({
           <PageTransition>{children}</PageTransition>
           <BackToTop />
           <WhatsAppButton />
+          <Toaster 
+            position="top-center"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: "#6B5B4E",
+                color: "#FAF7F2",
+                fontFamily: "var(--font-inter)",
+                fontSize: "14px",
+                padding: "12px 20px",
+                borderRadius: "8px",
+                boxShadow: "0 10px 30px rgba(107, 91, 78, 0.2)",
+              },
+              success: {
+                iconTheme: {
+                  primary: "#C9A96E",
+                  secondary: "#FAF7F2",
+                },
+              },
+              error: {
+                style: {
+                  background: "#dc2626",
+                  color: "#ffffff",
+                },
+              },
+            }}
+          />
         </AuthProvider>
       </body>
     </html>

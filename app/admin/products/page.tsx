@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { useAuth, db } from "@/lib/firebase";
 import { Plus, Pencil, Trash2, Star, Package } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface ProductItem {
   id: string;
@@ -99,9 +100,10 @@ export default function AdminProductsPage() {
 
     try {
       await deleteDoc(doc(db, "products", id));
+      toast.success("Product deleted", { id: "admin-product" });
     } catch (err) {
       console.error("Failed to delete product:", err);
-      alert("Failed to delete product. Please try again.");
+      toast.error("Failed to delete product. Please try again.", { id: "admin-product" });
     }
   };
 
@@ -111,9 +113,10 @@ export default function AdminProductsPage() {
       await updateDoc(doc(db, "products", id), {
         featured: !currentFeatured,
       });
+      toast.success("Updated", { id: "admin-product" });
     } catch (err) {
       console.error("Failed to update featured status:", err);
-      alert("Could not update featured status.");
+      toast.error("Could not update featured status.", { id: "admin-product" });
     } finally {
       setUpdatingId(null);
     }

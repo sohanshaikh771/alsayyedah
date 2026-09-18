@@ -5,6 +5,8 @@ import { Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useWishlist, WishlistItem } from "@/lib/wishlist-store";
 
+import toast from "react-hot-toast";
+
 interface WishlistProductInput {
   id: string;
   slug: string;
@@ -47,6 +49,12 @@ export default function WishlistButton({
     };
 
     toggleItem(item);
+
+    if (!isSaved) {
+      toast.success("Added to wishlist ❤️", { id: `wishlist-${product.id}` });
+    } else {
+      toast("Removed from wishlist", { icon: "💔", id: `wishlist-${product.id}` });
+    }
   };
 
   if (variant === "button") {

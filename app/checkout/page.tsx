@@ -3,13 +3,16 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, ShieldCheck, ChevronLeft } from "lucide-react";
+import { Loader2, ShieldCheck, ChevronLeft, Tag, X } from "lucide-react";
+import { increment } from "firebase/firestore";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PremiumButton from "@/components/PremiumButton";
 import { useCart } from "@/lib/cart-store";
 import { useAuth } from "@/lib/auth-context";
 import { createOrder } from "@/lib/orders-firestore";
+import { validateCoupon, updateCoupon } from "@/lib/coupons-firestore";
+import toast from "react-hot-toast";
 import {
   SavedAddress,
   INDIAN_STATES,
@@ -41,6 +44,18 @@ export default function CheckoutPage() {
 
   // Validation Errors
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Coupon State
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    id: string;
+    code: string;
+    discount: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
+  } | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
 
   // Check if currently entered address is a new one (not matching selected saved address)
   const isNewAddress =
@@ -95,10 +110,43 @@ export default function CheckoutPage() {
   }, [user, fullName, phone, savedAddresses]);
 
   const subtotal = totalPrice();
+  const couponDiscount = appliedCoupon ? appliedCoupon.discount : 0;
   const isFreeShipping = subtotal >= 1999;
   const shippingFee = isFreeShipping ? 0 : 99;
   const codFee = 49;
-  const total = subtotal + shippingFee + codFee;
+  const total = Math.max(0, subtotal - couponDiscount) + shippingFee + codFee;
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      const err = "Please enter a coupon code";
+      setCouponError(err);
+      toast.error(err, { id: "coupon" });
+      return;
+    }
+    setCouponLoading(true);
+    setCouponError("");
+
+    const result = await validateCoupon(couponCode, subtotal);
+
+    if (!result.valid || !result.coupon) {
+      const err = result.error || "Invalid coupon";
+      setCouponError(err);
+      setAppliedCoupon(null);
+      toast.error(err, { id: "coupon" });
+    } else {
+      const discount = result.discount ?? 0;
+      setAppliedCoupon({ ...result.coupon, discount });
+      setCouponError("");
+      toast.success(`Coupon applied! You saved ₹${discount}`, { id: "coupon" });
+    }
+    setCouponLoading(false);
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
+  };
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -202,6 +250,9 @@ export default function CheckoutPage() {
     const orderRef = `ALS-${Date.now().toString(36).toUpperCase()}`;
     const shippingStr = isFreeShipping ? "FREE" : `₹${shippingFee}`;
     const codCharges = codFee;
+    const couponLine = appliedCoupon
+      ? `*Coupon (${appliedCoupon.code}):* -₹${appliedCoupon.discount}\n`
+      : "";
 
     const message = `🛍️ *NEW ORDER — ALSayyedah*
 
@@ -211,7 +262,7 @@ export default function CheckoutPage() {
 ${items.map((i) => `• ${i.name} (${i.size}, ${i.color}) x${i.qty} = ₹${i.price * i.qty}`).join("\n")}
 
 *Subtotal:* ₹${subtotal}
-*Shipping:* ${shippingStr}
+${couponLine}*Shipping:* ${shippingStr}
 *COD Charges:* ₹${codCharges}
 *Total:* ₹${total}
 *Payment:* Cash on Delivery
@@ -247,6 +298,12 @@ Please confirm my order. Shukriya! 🙏`;
       shipping: shippingFee,
       codCharges,
       total,
+      coupon: appliedCoupon
+        ? {
+            code: appliedCoupon.code,
+            discount: appliedCoupon.discount,
+          }
+        : null,
       paymentMethod: "COD",
       address: {
         fullName: fullName.trim(),
@@ -258,6 +315,20 @@ Please confirm my order. Shukriya! 🙏`;
       },
       orderRef,
     }).catch((err: unknown) => console.error("Background order save failed:", err));
+
+    // 4a. Update coupon usage count if coupon applied
+    if (appliedCoupon?.id) {
+      try {
+        updateCoupon(appliedCoupon.id, {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          usedCount: increment(1) as any,
+        }).catch((err) =>
+          console.error("Failed to increment coupon usedCount:", err)
+        );
+      } catch (err) {
+        console.error("Failed to update coupon usage:", err);
+      }
+    }
 
     // 4b. Save to saved addresses if user is logged in, used a NEW address, and checked the box
     if (user && isNewAddress && saveAddressForFuture) {
@@ -640,6 +711,69 @@ Please confirm my order. Shukriya! 🙏`;
                   ))}
                 </div>
 
+                {/* Coupon Code Section (above Subtotal) */}
+                <div className="pt-3 border-t border-sand/60">
+                  {!appliedCoupon ? (
+                    <div className="bg-cream border border-sand rounded-md p-3 mb-1">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          placeholder="Enter coupon code"
+                          value={couponCode}
+                          onChange={(e) => {
+                            setCouponCode(e.target.value.toUpperCase());
+                            if (couponError) setCouponError("");
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              handleApplyCoupon();
+                            }
+                          }}
+                          className="flex-1 bg-transparent border-none outline-none text-sm uppercase font-mono text-taupe placeholder:text-taupe/40 min-w-0"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleApplyCoupon}
+                          disabled={couponLoading}
+                          className="bg-taupe text-cream px-4 py-1.5 rounded-md text-xs hover:bg-gold transition-colors font-medium disabled:opacity-50 cursor-pointer flex-shrink-0"
+                        >
+                          {couponLoading ? "Checking..." : "Apply"}
+                        </button>
+                      </div>
+                      {couponError && (
+                        <p className="text-red-500 text-xs mt-2">{couponError}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-1 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 font-mono font-bold text-green-800 text-sm">
+                          <Tag className="w-4 h-4 text-green-700" />
+                          <span>{appliedCoupon.code}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleRemoveCoupon}
+                          className="text-green-700 hover:text-green-900 p-0.5 rounded cursor-pointer"
+                          aria-label="Remove coupon"
+                          title="Remove coupon"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="flex items-center justify-between pt-0.5">
+                        <span className="text-xs text-green-700 font-medium">
+                          You saved ₹{appliedCoupon.discount.toLocaleString("en-IN")}!
+                        </span>
+                        <span className="text-green-700 font-semibold text-sm">
+                          -₹{appliedCoupon.discount.toLocaleString("en-IN")}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* Pricing Breakdown */}
                 <div className="border-t border-sand/60 pt-4 space-y-2 text-xs text-taupe/80">
                   <div className="flex justify-between">
@@ -648,6 +782,13 @@ Please confirm my order. Shukriya! 🙏`;
                       ₹{subtotal.toLocaleString("en-IN")}
                     </span>
                   </div>
+
+                  {appliedCoupon && (
+                    <div className="flex justify-between text-green-700 font-medium">
+                      <span>Coupon Discount ({appliedCoupon.code})</span>
+                      <span>-₹{appliedCoupon.discount.toLocaleString("en-IN")}</span>
+                    </div>
+                  )}
 
                   <div className="flex justify-between">
                     <span>Shipping</span>

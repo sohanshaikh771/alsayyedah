@@ -21,6 +21,7 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface BannerModalState {
   isOpen: boolean;
@@ -120,9 +121,10 @@ export default function AdminBannersPage() {
     try {
       setTogglingId(banner.id);
       await updateBanner(banner.id, { active: !banner.active });
+      toast.success("Banner status updated", { id: "admin-banner" });
     } catch (err) {
       console.error("Failed to toggle banner active state:", err);
-      alert("Failed to update status. Please check your admin privileges.");
+      toast.error("Failed to update status. Please check your admin privileges.", { id: "admin-banner" });
     } finally {
       setTogglingId(null);
     }
@@ -132,9 +134,10 @@ export default function AdminBannersPage() {
     try {
       await deleteBanner(id);
       setDeleteConfirmId(null);
+      toast.success("Banner deleted", { id: "admin-banner" });
     } catch (err) {
       console.error("Failed to delete banner:", err);
-      alert("Failed to delete banner. Please check permissions.");
+      toast.error("Failed to delete banner. Please check permissions.", { id: "admin-banner" });
     }
   };
 
@@ -172,10 +175,13 @@ export default function AdminBannersPage() {
         await createBanner(payload);
       }
 
+      toast.success("Banner saved", { id: "admin-banner" });
       handleCloseModal();
     } catch (err) {
       console.error("Error saving banner:", err);
-      setFormError("Failed to save banner. Please check your network and admin permissions.");
+      const errMsg = "Failed to save banner. Please check your network and admin permissions.";
+      setFormError(errMsg);
+      toast.error(errMsg, { id: "admin-banner" });
     } finally {
       setSaving(false);
     }

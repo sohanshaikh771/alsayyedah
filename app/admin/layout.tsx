@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
+  FolderOpen,
   ShoppingCart,
   FileText,
   Image as ImageIcon,
@@ -32,10 +33,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const navItems = [
     { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { label: "Products", href: "/admin/products", icon: Package },
+    { label: "Categories", href: "/admin/categories", icon: FolderOpen },
     { label: "Orders", href: "/admin/orders", icon: ShoppingCart },
-    { label: "Reviews", href: "/admin/reviews", icon: Star },
     { label: "Content", href: "/admin/content", icon: FileText },
     { label: "Banners", href: "/admin/banners", icon: ImageIcon },
+    { label: "Reviews", href: "/admin/reviews", icon: Star },
     { label: "Coupons", href: "/admin/coupons", icon: Tag },
     { label: "Settings", href: "/admin/settings", icon: Settings },
   ];

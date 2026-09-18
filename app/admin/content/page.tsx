@@ -8,6 +8,7 @@ import {
   SiteContent,
 } from "@/lib/content-firestore";
 import { Loader2, Check, Sparkles } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function AdminContentPage() {
   const [content, setContent] = useState<SiteContent>(defaultContent);
@@ -38,9 +39,11 @@ export default function AdminContentPage() {
       await updateSiteContent(content);
       setSaving(false);
       setSaved(true);
+      toast.success("Content updated", { id: "admin-content" });
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
       console.error("Failed to save site content:", err);
+      toast.error("Failed to save content", { id: "admin-content" });
       setSaving(false);
     }
   };

@@ -107,11 +107,11 @@ export default function SearchBar() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="p-2 text-taupe hover:text-gold transition-colors focus:outline-none cursor-pointer"
+        className="p-2 hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 focus:outline-none cursor-pointer flex items-center justify-center group"
         aria-label="Search products"
         title="Search"
       >
-        <Search className="w-5 h-5" />
+        <Search className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
       </button>
 
       {/* Search Modal */}

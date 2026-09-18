@@ -22,6 +22,7 @@ import { useAuth } from "@/lib/auth-context";
 import { db } from "@/lib/firebase";
 import { Order, updateOrderStatus } from "@/lib/orders-firestore";
 import { BRAND } from "@/lib/constants";
+import toast from "react-hot-toast";
 
 const STEP_LABELS = ["Placed", "Confirmed", "Shipped", "Delivered"];
 
@@ -89,9 +90,10 @@ export default function OrderDetailPage() {
       try {
         setCancelling(true);
         await updateOrderStatus(order.id, "CANCELLED");
+        toast.success("Order cancelled", { id: "order-cancel" });
       } catch (err) {
         console.error("Failed to cancel order:", err);
-        alert("Failed to cancel order. Please try again.");
+        toast.error("Failed to cancel order. Please try again.", { id: "order-cancel" });
       } finally {
         setCancelling(false);
       }

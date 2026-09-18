@@ -2,9 +2,11 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { MessageCircle, Minus, Plus, Truck, Banknote, ShieldCheck } from "lucide-react";
+import toast from "react-hot-toast";
 import { Product } from "@/lib/products-firestore";
 import { BRAND } from "@/lib/constants";
 import { useCart } from "@/lib/cart-store";
@@ -50,7 +52,24 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       color: selectedColor,
       qty: quantity,
     });
-    router.push("/cart");
+    toast.success(
+      (t) => (
+        <span className="flex items-center gap-2">
+          <span>Added to cart!</span>
+          <Link
+            href="/cart"
+            onClick={() => toast.dismiss(t.id)}
+            className="text-xs bg-gold text-white font-medium px-2 py-0.5 rounded hover:bg-gold/90 transition ml-1 inline-block"
+          >
+            View Cart
+          </Link>
+        </span>
+      ),
+      {
+        icon: "🛒",
+        id: "cart",
+      }
+    );
   };
 
   const orderMessage = `Hi ${BRAND.name}! I would like to order:

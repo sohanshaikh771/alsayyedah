@@ -20,8 +20,10 @@ import { FcGoogle } from "react-icons/fc";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PremiumButton from "@/components/PremiumButton";
+import OrderCardSkeleton from "@/components/skeletons/OrderCardSkeleton";
 import { useAuth } from "@/lib/auth-context";
 import { db } from "@/lib/firebase";
+import toast from "react-hot-toast";
 import { OrderItem } from "@/lib/orders-firestore";
 import {
   Address,
@@ -242,7 +244,7 @@ function AccountContent() {
   // Modal actions
   const openAddModal = () => {
     if (addresses.length >= 2) {
-      alert("Maximum 2 addresses allowed. Delete one to add new.");
+      toast.error("Maximum 2 addresses allowed", { id: "address" });
       return;
     }
     setEditingAddress(null);
@@ -320,7 +322,7 @@ function AccountContent() {
     if (!validateModalForm()) return;
 
     if (!editingAddress && addresses.length >= 2) {
-      alert("Maximum 2 addresses allowed. Delete one first.");
+      toast.error("Maximum 2 addresses allowed", { id: "address" });
       return;
     }
 
@@ -351,12 +353,13 @@ function AccountContent() {
           isDefault: modalForm.isDefault,
         });
       }
+      toast.success("Address saved", { id: "address" });
       closeModal();
     } catch (err: unknown) {
       console.error("Error saving address:", err);
       const errMsg =
         err instanceof Error ? err.message : "Failed to save address. Please try again.";
-      alert(errMsg);
+      toast.error(errMsg, { id: "address" });
     } finally {
       setSavingAddress(false);
     }
@@ -366,9 +369,10 @@ function AccountContent() {
     if (!confirm("Are you sure you want to delete this address?")) return;
     try {
       await deleteAddress(id);
+      toast("Address deleted", { icon: "🗑️", id: "address" });
     } catch (err) {
       console.error("Error deleting address:", err);
-      alert("Failed to delete address.");
+      toast.error("Failed to delete address.", { id: "address" });
     }
   };
 
@@ -376,8 +380,10 @@ function AccountContent() {
     if (!user) return;
     try {
       await setDefaultAddress(user.uid, id);
+      toast.success("Default address updated", { id: "address" });
     } catch (err) {
       console.error("Error setting default address:", err);
+      toast.error("Failed to update default address.", { id: "address" });
     }
   };
 
@@ -645,9 +651,10 @@ function AccountContent() {
                 </h1>
 
                 {loadingOrders ? (
-                  <div className="bg-cream border border-sand rounded-xl p-12 text-center">
-                    <Loader2 className="w-6 h-6 animate-spin text-taupe mx-auto mb-2" />
-                    <p className="text-sm text-taupe/70">Loading your orders...</p>
+                  <div className="space-y-4">
+                    <OrderCardSkeleton />
+                    <OrderCardSkeleton />
+                    <OrderCardSkeleton />
                   </div>
                 ) : orders.length === 0 ? (
                   /* Empty State */

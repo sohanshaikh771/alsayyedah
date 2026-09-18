@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PremiumButton from "@/components/PremiumButton";
 import { useCart } from "@/lib/cart-store";
+import toast from "react-hot-toast";
 
 export default function CartPage() {
   const [mounted, setMounted] = useState(false);
@@ -111,9 +112,10 @@ export default function CartPage() {
 
                   <button
                     type="button"
-                    onClick={() =>
-                      removeItem(item.productId, item.size, item.color)
-                    }
+                    onClick={() => {
+                      removeItem(item.productId, item.size, item.color);
+                      toast("Item removed", { icon: "🗑️", id: "cart-remove" });
+                    }}
                     className="text-taupe/50 hover:text-red-600 transition p-2 cursor-pointer"
                     aria-label="Remove item"
                   >

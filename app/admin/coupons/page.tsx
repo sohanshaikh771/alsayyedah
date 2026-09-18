@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Plus, Copy, Check, Trash2, Pencil, Loader2, X } from "lucide-react";
+import toast from "react-hot-toast";
 import {
   listenCoupons,
   createCoupon,
@@ -102,6 +103,7 @@ export default function AdminCouponsPage() {
   const handleCopy = (code: string, id: string) => {
     navigator.clipboard.writeText(code);
     setCopiedId(id);
+    toast.success("Coupon code copied!", { id: "coupon-copy" });
     setTimeout(() => {
       setCopiedId(null);
     }, 2000);
@@ -111,9 +113,10 @@ export default function AdminCouponsPage() {
     if (!confirm(`Are you sure you want to delete coupon "${code}"?`)) return;
     try {
       await deleteCoupon(id);
+      toast.success("Coupon deleted", { id: "admin-coupon" });
     } catch (err) {
       console.error("Failed to delete coupon:", err);
-      alert("Failed to delete coupon. Please try again.");
+      toast.error("Failed to delete coupon. Please try again.", { id: "admin-coupon" });
     }
   };
 
@@ -123,27 +126,37 @@ export default function AdminCouponsPage() {
 
     const cleanCode = formData.code.toUpperCase().trim();
     if (!cleanCode) {
-      setError("Please enter a coupon code");
+      const msg = "Please enter a coupon code";
+      setError(msg);
+      toast.error(msg, { id: "admin-coupon" });
       return;
     }
 
     if (formData.value <= 0) {
-      setError("Please enter a discount value greater than 0");
+      const msg = "Please enter a discount value greater than 0";
+      setError(msg);
+      toast.error(msg, { id: "admin-coupon" });
       return;
     }
 
     if (formData.type === "percentage" && formData.value > 100) {
-      setError("Percentage discount cannot exceed 100%");
+      const msg = "Percentage discount cannot exceed 100%";
+      setError(msg);
+      toast.error(msg, { id: "admin-coupon" });
       return;
     }
 
     if (!formData.validFrom || !formData.validTill) {
-      setError("Please set both start and end validity dates");
+      const msg = "Please set both start and end validity dates";
+      setError(msg);
+      toast.error(msg, { id: "admin-coupon" });
       return;
     }
 
     if (formData.validFrom > formData.validTill) {
-      setError("Valid Till date must be after Valid From date");
+      const msg = "Valid Till date must be after Valid From date";
+      setError(msg);
+      toast.error(msg, { id: "admin-coupon" });
       return;
     }
 
@@ -172,10 +185,13 @@ export default function AdminCouponsPage() {
           active: Boolean(formData.active),
         });
       }
+      toast.success("Coupon saved", { id: "admin-coupon" });
       setShowModal(false);
     } catch (err) {
       console.error("Failed to save coupon:", err);
-      setError("Failed to save coupon. Please try again.");
+      const msg = "Failed to save coupon. Please try again.";
+      setError(msg);
+      toast.error(msg, { id: "admin-coupon" });
     } finally {
       setSaving(false);
     }
@@ -214,7 +230,7 @@ export default function AdminCouponsPage() {
         <div className="py-16 text-center bg-cream border border-sand rounded-md">
           <p className="font-serif text-lg text-taupe">No coupons yet</p>
           <p className="text-xs text-taupe/60 mt-1">
-            Click "+ Create Coupon" to add your first promotional discount.
+            Click &quot;+ Create Coupon&quot; to add your first promotional discount.
           </p>
         </div>
       ) : (

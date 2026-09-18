@@ -15,11 +15,22 @@ body {
 
 @keyframes shimmer {
   0% {
-    transform: translateX(-100%);
+    background-position: -1000px 0;
   }
   100% {
-    transform: translateX(100%);
+    background-position: 1000px 0;
   }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    #E8DCC8 0%,
+    #F5EFE6 50%,
+    #E8DCC8 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
 }
 
 .shimmer-effect {
@@ -43,3 +54,4 @@ body {
   animation: shimmer 1.8s infinite;
   content: "";
 }
+

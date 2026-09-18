@@ -1,9 +1,9 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ProductCard from "@/components/ProductCard";
-import { getAllProducts, getProductsByCategory } from "@/lib/products-firestore";
+import ProductGridClient from "@/components/ProductGridClient";
+import ProductGridSkeleton from "@/components/skeletons/ProductGridSkeleton";
 
 export const revalidate = 0;
 
@@ -43,11 +43,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       ? rawParam
       : "all";
 
-  const filteredProducts =
-    activeCategory === "all"
-      ? await getAllProducts()
-      : await getProductsByCategory(activeCategory);
-
   const pageTitle =
     activeCategory === "all"
       ? "All Products"
@@ -64,7 +59,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             {pageTitle}
           </h1>
           <p className="mt-2 text-sm text-taupe/70 font-sans">
-            Showing {filteredProducts.length} {filteredProducts.length === 1 ? "design" : "designs"}
+            Handcrafted modest designs delivered across India
           </p>
         </div>
 
@@ -88,31 +83,10 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           })}
         </div>
 
-        {/* Products Grid or Empty State */}
-        {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <div className="py-24 text-center space-y-4 bg-beige/40 rounded-lg border border-sand/60 max-w-xl mx-auto px-6">
-            <h3 className="font-serif text-2xl text-taupe">
-              No products found in this category
-            </h3>
-            <p className="text-sm text-taupe/70 font-sans max-w-md mx-auto">
-              We could not find any items matching your selected filter. Explore our complete collection to discover more modest couture.
-            </p>
-            <div className="pt-2">
-              <Link
-                href="/shop"
-                className="inline-flex items-center justify-center px-6 py-2.5 bg-taupe text-cream rounded-md text-sm font-medium hover:bg-taupe/90 transition-colors shadow-sm"
-              >
-                View All Products
-              </Link>
-            </div>
-          </div>
-        )}
+        {/* Products Grid with Skeleton Loading */}
+        <Suspense fallback={<ProductGridSkeleton count={8} />}>
+          <ProductGridClient category={activeCategory} />
+        </Suspense>
       </main>
 
       <Footer />

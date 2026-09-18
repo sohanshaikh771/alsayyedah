@@ -16,6 +16,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 const STATUS_FILTERS = [
   "All",
@@ -109,9 +110,10 @@ export default function AdminOrdersPage() {
     if (window.confirm("Are you sure you want to delete this order?")) {
       try {
         await deleteOrder(orderId);
+        toast.success("Order deleted", { id: "admin-order" });
       } catch (err) {
         console.error("Failed to delete order:", err);
-        alert("Failed to delete order. Please try again.");
+        toast.error("Failed to delete order. Please try again.", { id: "admin-order" });
       }
     }
   };
@@ -459,12 +461,18 @@ export default function AdminOrdersPage() {
                       </label>
                       <select
                         value={order.status}
-                        onChange={(e) =>
-                          updateOrderStatus(
-                            order.id,
-                            e.target.value as Order["status"]
-                          )
-                        }
+                        onChange={async (e) => {
+                          try {
+                            await updateOrderStatus(
+                              order.id,
+                              e.target.value as Order["status"]
+                            );
+                            toast.success("Order status updated", { id: "admin-order" });
+                          } catch (err) {
+                            console.error("Failed to update order status:", err);
+                            toast.error("Failed to update status", { id: "admin-order" });
+                          }
+                        }}
                         className={`text-xs px-3 py-1.5 rounded-md border font-medium focus:outline-none transition-colors cursor-pointer ${
                           order.status === "PENDING"
                             ? "bg-amber-100 text-amber-800 border-amber-300"

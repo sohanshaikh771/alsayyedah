@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { X, Plus, Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface ImageUploaderProps {
   value?: string[];
@@ -29,14 +30,14 @@ export default function ImageUploader({
     const uploadPreset = (process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "").trim();
 
     if (!cloudName || !uploadPreset) {
-      alert("Upload failed: Cloudinary cloud name or upload preset is not configured.");
+      toast.error("Upload failed: Cloudinary cloud name or upload preset is not configured.", { id: "uploader" });
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
     const remainingSlots = maxImages - value.length;
     if (remainingSlots <= 0) {
-      alert(`Maximum limit of ${maxImages} images reached.`);
+      toast.error(`Maximum limit of ${maxImages} images reached.`, { id: "uploader" });
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
@@ -72,7 +73,7 @@ export default function ImageUploader({
     } catch (err: unknown) {
       console.error("Upload error:", err);
       const message = err instanceof Error ? err.message : "Something went wrong";
-      alert("Upload failed: " + message);
+      toast.error("Upload failed: " + message, { id: "uploader" });
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
