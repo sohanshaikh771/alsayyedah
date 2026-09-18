@@ -49,14 +49,17 @@ export type Order = {
   address?: OrderAddress;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createOrder(orderData: any) {
   // Recursive cleaner: replaces undefined with empty string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function cleanUndefined(obj: any): any {
     if (obj === null) return null;
     if (Array.isArray(obj)) {
       return obj.map(cleanUndefined);
     }
     if (typeof obj === "object" && obj.constructor === Object) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cleaned: any = {};
       Object.keys(obj).forEach((key) => {
         const val = obj[key];

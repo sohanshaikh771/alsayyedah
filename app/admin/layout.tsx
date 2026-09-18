@@ -10,6 +10,8 @@ import {
   FileText,
   Image as ImageIcon,
   Settings,
+  Star,
+  Tag,
   Menu,
   X,
   ExternalLink,
@@ -31,8 +33,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { label: "Products", href: "/admin/products", icon: Package },
     { label: "Orders", href: "/admin/orders", icon: ShoppingCart },
+    { label: "Reviews", href: "/admin/reviews", icon: Star },
     { label: "Content", href: "/admin/content", icon: FileText },
     { label: "Banners", href: "/admin/banners", icon: ImageIcon },
+    { label: "Coupons", href: "/admin/coupons", icon: Tag },
     { label: "Settings", href: "/admin/settings", icon: Settings },
   ];
 

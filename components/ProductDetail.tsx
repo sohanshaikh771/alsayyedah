@@ -8,6 +8,11 @@ import { MessageCircle, Minus, Plus, Truck, Banknote, ShieldCheck } from "lucide
 import { Product } from "@/lib/products-firestore";
 import { BRAND } from "@/lib/constants";
 import { useCart } from "@/lib/cart-store";
+import PremiumButton from "@/components/PremiumButton";
+import SizeGuideModal from "@/components/SizeGuideModal";
+import WishlistButton from "@/components/WishlistButton";
+import ProductReviews from "./ProductReviews";
+import ReviewForm from "./ReviewForm";
 
 interface ProductDetailProps {
   product: Product;
@@ -22,6 +27,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const [selectedSize, setSelectedSize] = useState(product.sizes[0] || "");
   const [selectedColor, setSelectedColor] = useState(product.colors[0] || "");
   const [quantity, setQuantity] = useState(1);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
 
   const hasDiscount = Boolean(product.mrp && product.mrp > product.price);
   const discountPercent =
@@ -59,7 +65,8 @@ Please let me know how to proceed with payment and shipping.`;
   const whatsappOrderUrl = `${BRAND.whatsappLink}?text=${encodeURIComponent(orderMessage)}`;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start">
+    <div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start">
       {/* LEFT COLUMN: Image Gallery */}
       <div className="space-y-4">
         {/* Main Image */}
@@ -199,12 +206,19 @@ Please let me know how to proceed with payment and shipping.`;
         </p>
 
         {/* SIZE SELECTION */}
-        {product.sizes && product.sizes.length > 0 && (
+        {product.sizes && product.sizes.length > 0 ? (
           <div className="pt-2">
             <div className="flex items-center justify-between mb-2.5">
               <label className="text-xs font-semibold uppercase tracking-wider text-taupe">
                 Size: <span className="text-gold capitalize">{selectedSize}</span>
               </label>
+              <button
+                type="button"
+                onClick={() => setShowSizeGuide(true)}
+                className="text-xs text-taupe underline hover:text-gold cursor-pointer transition-colors"
+              >
+                Size Guide
+              </button>
             </div>
             <div className="flex flex-wrap gap-2.5">
               {product.sizes.map((size) => {
@@ -224,6 +238,21 @@ Please let me know how to proceed with payment and shipping.`;
                   </button>
                 );
               })}
+            </div>
+          </div>
+        ) : (
+          <div className="pt-2">
+            <div className="flex items-center justify-between mb-2.5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-taupe">
+                Size: <span className="text-gold capitalize">Free Size</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowSizeGuide(true)}
+                className="text-xs text-taupe underline hover:text-gold cursor-pointer transition-colors"
+              >
+                Size Guide
+              </button>
             </div>
           </div>
         )}
@@ -288,23 +317,33 @@ Please let me know how to proceed with payment and shipping.`;
 
         {/* ACTION BUTTONS */}
         <div className="pt-2 flex flex-col gap-3">
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            className="w-full bg-taupe text-cream py-3.5 px-6 rounded-md font-sans text-sm font-medium tracking-wide shadow-sm hover:bg-gold transition-colors duration-200"
-          >
-            Add to Cart
-          </button>
+          <div className="flex items-center gap-3">
+            <PremiumButton
+              onClick={handleAddToCart}
+              variant="primary"
+              size="md"
+              className="flex-1 py-3.5"
+            >
+              Add to Cart
+            </PremiumButton>
 
-          <a
+            <WishlistButton
+              product={product}
+              variant="icon"
+              className="w-12 h-12 border border-sand rounded-md bg-cream hover:bg-beige flex-shrink-0"
+            />
+          </div>
+
+          <PremiumButton
             href={whatsappOrderUrl}
             target="_blank"
-            rel="noopener noreferrer"
-            className="w-full inline-flex items-center justify-center gap-2 border border-taupe text-taupe py-3.5 px-6 rounded-md font-sans text-sm font-medium tracking-wide hover:bg-taupe hover:text-cream transition-colors duration-200"
+            variant="outline"
+            size="md"
+            className="w-full py-3.5 gap-2"
           >
             <MessageCircle className="w-4 h-4" />
             <span>Order on WhatsApp</span>
-          </a>
+          </PremiumButton>
         </div>
 
         {/* HIGHLIGHTS & TRUST BADGES */}
@@ -326,5 +365,29 @@ Please let me know how to proceed with payment and shipping.`;
         </div>
       </motion.div>
     </div>
+
+    {/* REVIEWS SECTION */}
+    <section className="mt-16 border-t border-sand pt-12">
+      <ProductReviews 
+        productId={product.id} 
+        productSlug={product.slug} 
+      />
+      
+      <div className="mt-8">
+        <ReviewForm 
+          productId={product.id}
+          productSlug={product.slug}
+          productName={product.name}
+        />
+      </div>
+    </section>
+
+    {/* SIZE GUIDE MODAL */}
+    <SizeGuideModal
+      isOpen={showSizeGuide}
+      onClose={() => setShowSizeGuide(false)}
+      category={product.category}
+    />
+  </div>
   );
 }

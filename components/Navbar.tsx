@@ -2,15 +2,19 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ShoppingBag, Menu, X, LogOut, User } from "lucide-react";
+import { ShoppingBag, Heart, Menu, X, LogOut, User } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-store";
+import { useWishlist } from "@/lib/wishlist-store";
+import PremiumButton from "@/components/PremiumButton";
+import SearchBar from "./SearchBar";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { user, role, logout } = useAuth();
   const totalItems = useCart((s) => s.totalItems());
+  const totalWishlistItems = useWishlist((s) => s.totalItems());
 
   const isAdmin = role === "ADMIN" || (user as { role?: string } | null)?.role === "ADMIN";
 
@@ -19,6 +23,7 @@ export default function Navbar() {
   }, []);
 
   const itemCount = mounted ? totalItems : 0;
+  const wishlistCount = mounted ? totalWishlistItems : 0;
 
   const navLinks = [
     { label: "Shop", href: "/shop" },
@@ -57,7 +62,25 @@ export default function Navbar() {
           </nav>
 
           {/* Right: Cart & Auth */}
-          <div className="flex items-center space-x-5">
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            {/* Search Bar */}
+            <SearchBar />
+
+            {/* Wishlist Icon */}
+            <Link
+              href="/wishlist"
+              className="relative p-2 text-taupe hover:text-gold transition-colors"
+              aria-label="Wishlist"
+              title="Wishlist"
+            >
+              <Heart className="w-5 h-5" />
+              {wishlistCount > 0 && (
+                <span className="absolute top-1 right-1 flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-gold rounded-full">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+
             {/* Cart Icon */}
             <Link
               href="/cart"
@@ -103,12 +126,13 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                <Link
+                <PremiumButton
                   href="/login"
-                  className="font-sans text-sm font-medium tracking-wide text-taupe hover:text-gold transition-colors"
+                  variant="outline"
+                  size="sm"
                 >
                   Login
-                </Link>
+                </PremiumButton>
               )}
             </div>
 
@@ -144,6 +168,21 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/wishlist"
+              onClick={() => setMobileMenuOpen(false)}
+              className="font-sans text-base font-medium text-taupe hover:text-gold transition-colors py-1 flex items-center justify-between"
+            >
+              <div className="flex items-center space-x-2">
+                <Heart className="w-4 h-4 text-taupe" />
+                <span>Wishlist</span>
+              </div>
+              {wishlistCount > 0 && (
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-gold text-white">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
           </nav>
 
           <div className="pt-3 border-t border-sand/60 flex items-center justify-between">
@@ -184,13 +223,15 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <Link
+              <PremiumButton
                 href="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="font-sans text-sm font-medium text-taupe hover:text-gold transition-colors"
+                variant="outline"
+                size="sm"
+                className="w-full text-center"
               >
                 Login
-              </Link>
+              </PremiumButton>
             )}
           </div>
         </div>

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, ShieldCheck, ChevronLeft } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PremiumButton from "@/components/PremiumButton";
 import { useCart } from "@/lib/cart-store";
 import { useAuth } from "@/lib/auth-context";
 import { createOrder } from "@/lib/orders-firestore";
@@ -27,6 +28,7 @@ export default function CheckoutPage() {
   // Saved Addresses State
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
+  const [modifiedFromId, setModifiedFromId] = useState<string | null>(null);
   const [saveAddressForFuture, setSaveAddressForFuture] = useState(true);
 
   // Form State (6 required fields only)
@@ -41,7 +43,9 @@ export default function CheckoutPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Check if currently entered address is a new one (not matching selected saved address)
-  const isNewAddress = !savedAddresses.some((a) => a.id === selectedAddressId);
+  const isNewAddress =
+    selectedAddressId === "new" ||
+    !savedAddresses.some((a) => a.id === selectedAddressId);
 
   useEffect(() => {
     setMounted(true);
@@ -49,7 +53,10 @@ export default function CheckoutPage() {
 
   // Subscribe to saved addresses if user is logged in
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setSavedAddresses([]);
+      return;
+    }
     const unsubscribe = subscribeUserAddresses(user.uid, (list) => {
       setSavedAddresses(list);
       // Auto-select default or first address initially if none selected yet
@@ -136,8 +143,9 @@ export default function CheckoutPage() {
     setter: React.Dispatch<React.SetStateAction<string>>
   ) => {
     setter(value);
-    // If editing field, mark as a new address
+    // If user modifies a field, deselect the saved address radio
     if (selectedAddressId && selectedAddressId !== "new") {
+      setModifiedFromId(selectedAddressId);
       setSelectedAddressId("new");
     }
     if (errors[field]) {
@@ -151,6 +159,7 @@ export default function CheckoutPage() {
 
   const handleSelectSavedAddress = (addr: SavedAddress) => {
     setSelectedAddressId(addr.id);
+    setModifiedFromId(null);
     setFullName(addr.fullName);
     setPhone(addr.phone);
     setAddress(addr.address);
@@ -162,8 +171,12 @@ export default function CheckoutPage() {
 
   const handleSelectNewAddress = () => {
     setSelectedAddressId("new");
+    setModifiedFromId(null);
     setFullName(user?.displayName || "");
-    setPhone("");
+    const cleanPhone = user?.phoneNumber
+      ? user.phoneNumber.replace(/\+91|\D/g, "")
+      : "";
+    setPhone(cleanPhone);
     setAddress("");
     setCity("");
     setState("");
@@ -244,7 +257,7 @@ Please confirm my order. Shukriya! 🙏`;
         pincode: pincode.replace(/\D/g, ""),
       },
       orderRef,
-    }).catch((err: any) => console.error("Background order save failed:", err));
+    }).catch((err: unknown) => console.error("Background order save failed:", err));
 
     // 4b. Save to saved addresses if user is logged in, used a NEW address, and checked the box
     if (user && isNewAddress && saveAddressForFuture) {
@@ -713,10 +726,12 @@ Please confirm my order. Shukriya! 🙏`;
 
                 {/* Submit CTA */}
                 <div className="pt-2 space-y-3">
-                  <button
+                  <PremiumButton
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-taupe text-cream py-3.5 rounded-md hover:bg-gold transition flex items-center justify-center gap-2 font-medium shadow-xs disabled:opacity-60 cursor-pointer"
+                    variant="primary"
+                    size="md"
+                    className="w-full py-3.5 gap-2"
                   >
                     {isSubmitting ? (
                       <>
@@ -726,7 +741,7 @@ Please confirm my order. Shukriya! 🙏`;
                     ) : (
                       <span>Place Order</span>
                     )}
-                  </button>
+                  </PremiumButton>
 
                   <p className="text-[11px] text-center text-taupe/60 leading-tight">
                     By placing your order, you agree to ALSayyedah&apos;s Terms &amp; Conditions and Privacy Policy.

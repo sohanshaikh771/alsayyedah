@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import { AuthProvider } from "@/lib/auth-context";
+import BannerStrip from "@/components/BannerStrip";
+import ScrollProgress from "@/components/ScrollProgress";
+import BackToTop from "@/components/BackToTop";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import PageTransition from "@/components/PageTransition";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -29,10 +34,17 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
       <body
-        className={`${playfair.variable} ${inter.variable} bg-cream text-taupe font-sans antialiased min-h-screen`}
+        className={`${playfair.variable} ${inter.variable} bg-cream text-taupe font-sans antialiased min-h-screen flex flex-col`}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <ScrollProgress />
+          <BannerStrip />
+          <PageTransition>{children}</PageTransition>
+          <BackToTop />
+          <WhatsAppButton />
+        </AuthProvider>
       </body>
     </html>
   );
 }
+

@@ -86,21 +86,20 @@ export async function saveAddress(
     isDefault?: boolean;
   }
 ): Promise<string> {
+  const existing = await getUserAddresses(userId);
+  if (existing.length >= 2) {
+    throw new Error("Maximum 2 addresses allowed. Delete one first.");
+  }
+
   const addressesRef = collection(db, "addresses");
-
-  // Check existing addresses for user
-  const existingSnap = await getDocs(
-    query(addressesRef, where("userId", "==", userId))
-  );
-
-  const isFirstAddress = existingSnap.empty;
+  const isFirstAddress = existing.length === 0;
   const shouldBeDefault = data.isDefault ?? isFirstAddress;
 
-  if (shouldBeDefault && !existingSnap.empty) {
+  if (shouldBeDefault && existing.length > 0) {
     const batch = writeBatch(db);
-    existingSnap.docs.forEach((d) => {
-      if (d.data().isDefault) {
-        batch.update(d.ref, { isDefault: false });
+    existing.forEach((addr) => {
+      if (addr.isDefault) {
+        batch.update(doc(db, "addresses", addr.id), { isDefault: false });
       }
     });
     await batch.commit();

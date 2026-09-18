@@ -26,13 +26,11 @@ const STATUS_FILTERS = [
   "Cancelled",
 ];
 
-const PAYMENT_FILTERS = ["All", "COD", "ONLINE", "WHATSAPP"];
-
 function formatOrderDate(createdAt: unknown): string {
   if (!createdAt) return "Just now";
   let date: Date | null = null;
 
-  const ts = createdAt as any; // cast once
+  const ts = createdAt as { toDate?: () => Date; seconds?: number } | null;
 
   if (typeof ts === "object" && ts !== null) {
     if (typeof ts.toDate === "function") {

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Trash2, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PremiumButton from "@/components/PremiumButton";
 import { useCart } from "@/lib/cart-store";
 
 export default function CartPage() {
@@ -166,13 +167,15 @@ export default function CartPage() {
 
               {/* Actions */}
               <div className="pt-2 space-y-3">
-                <Link
+                <PremiumButton
                   href="/checkout"
-                  className="w-full bg-taupe text-cream py-3.5 rounded-md hover:bg-gold transition flex items-center justify-center gap-2 font-medium shadow-xs text-center cursor-pointer"
+                  variant="primary"
+                  size="md"
+                  className="w-full py-3.5 gap-2"
                 >
                   <span>Proceed to Checkout</span>
                   <ArrowRight className="w-4 h-4" />
-                </Link>
+                </PremiumButton>
 
                 <div className="text-center">
                   <Link

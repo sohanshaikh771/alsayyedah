@@ -19,6 +19,7 @@ import {
 import { FcGoogle } from "react-icons/fc";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PremiumButton from "@/components/PremiumButton";
 import { useAuth } from "@/lib/auth-context";
 import { db } from "@/lib/firebase";
 import { OrderItem } from "@/lib/orders-firestore";
@@ -240,6 +241,10 @@ function AccountContent() {
 
   // Modal actions
   const openAddModal = () => {
+    if (addresses.length >= 2) {
+      alert("Maximum 2 addresses allowed. Delete one to add new.");
+      return;
+    }
     setEditingAddress(null);
     setModalForm({
       fullName: user?.displayName || "",
@@ -314,6 +319,11 @@ function AccountContent() {
     if (!user) return;
     if (!validateModalForm()) return;
 
+    if (!editingAddress && addresses.length >= 2) {
+      alert("Maximum 2 addresses allowed. Delete one first.");
+      return;
+    }
+
     try {
       setSavingAddress(true);
       if (editingAddress) {
@@ -342,9 +352,11 @@ function AccountContent() {
         });
       }
       closeModal();
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Error saving address:", err);
-      alert("Failed to save address. Please try again.");
+      const errMsg =
+        err instanceof Error ? err.message : "Failed to save address. Please try again.";
+      alert(errMsg);
     } finally {
       setSavingAddress(false);
     }
@@ -752,18 +764,30 @@ function AccountContent() {
             {/* ----------------- TAB 3: ADDRESSES ----------------- */}
             {activeTab === "addresses" && (
               <div>
-                <div className="flex items-center justify-between gap-4 mb-6">
-                  <h1 className="font-serif text-2xl text-taupe font-medium">
-                    Saved Addresses
-                  </h1>
-                  <button
-                    type="button"
-                    onClick={openAddModal}
-                    className="bg-taupe text-cream px-4 py-2 rounded-md text-sm font-medium hover:bg-taupe/90 transition shadow-xs flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Add New Address</span>
-                  </button>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                  <div>
+                    <h1 className="font-serif text-2xl text-taupe font-medium">
+                      Saved Addresses ({addresses.length}/2)
+                    </h1>
+                  </div>
+
+                  <div className="flex flex-col sm:items-end">
+                    <PremiumButton
+                      onClick={openAddModal}
+                      disabled={addresses.length >= 2}
+                      variant="primary"
+                      size="sm"
+                      className="gap-1.5"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Add New Address</span>
+                    </PremiumButton>
+                    {addresses.length >= 2 && (
+                      <p className="text-xs text-rose-600 mt-1.5 font-medium">
+                        Maximum 2 addresses allowed. Delete one to add new.
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {loadingAddresses ? (
@@ -781,53 +805,56 @@ function AccountContent() {
                     <p className="text-xs text-taupe/60 mt-1 max-w-sm mx-auto">
                       Save your delivery address for a faster and smoother checkout experience.
                     </p>
-                    <button
-                      type="button"
+                    <PremiumButton
                       onClick={openAddModal}
-                      className="inline-flex items-center gap-2 mt-5 bg-taupe text-cream px-5 py-2.5 rounded-md hover:bg-taupe/90 transition text-sm font-medium shadow-xs cursor-pointer"
+                      variant="primary"
+                      size="sm"
+                      className="mt-5 gap-2"
                     >
                       <Plus className="w-4 h-4" />
                       <span>Add Address</span>
-                    </button>
+                    </PremiumButton>
                   </div>
                 ) : (
-                  /* Address Cards */
-                  <div className="space-y-3">
+                  /* Address Cards Grid */
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {addresses.map((addr) => (
                       <div
                         key={addr.id}
-                        className="bg-cream border border-sand rounded-md p-4 mb-3 shadow-2xs relative"
+                        className="bg-cream border border-sand rounded-md p-4 flex flex-col justify-between shadow-2xs relative"
                       >
-                        {/* Name + Phone + DEFAULT badge */}
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium text-taupe text-base">
-                              {addr.fullName}
-                            </span>
-                            <span className="text-sm text-taupe/60">
-                              • {addr.phone}
-                            </span>
+                        <div>
+                          {/* Name + Phone + DEFAULT badge */}
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-taupe text-base">
+                                {addr.fullName}
+                              </span>
+                              <span className="text-sm text-taupe/60">
+                                • {addr.phone}
+                              </span>
+                            </div>
+
+                            {addr.isDefault && (
+                              <span className="bg-[#FAF3E0] text-[#916B25] border border-gold/40 text-[11px] px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">
+                                DEFAULT
+                              </span>
+                            )}
                           </div>
 
-                          {addr.isDefault && (
-                            <span className="bg-[#FAF3E0] text-[#916B25] border border-gold/40 text-[11px] px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">
-                              DEFAULT
-                            </span>
-                          )}
+                          {/* Address body */}
+                          <p className="whitespace-pre-line text-sm text-taupe/80 mt-2 leading-relaxed">
+                            {addr.address}
+                          </p>
+
+                          {/* City, State - Pincode */}
+                          <p className="text-sm text-taupe/80 mt-1 font-medium">
+                            {addr.city}, {addr.state} - {addr.pincode}
+                          </p>
                         </div>
 
-                        {/* Address body */}
-                        <p className="whitespace-pre-line text-sm text-taupe/80 mt-2 leading-relaxed">
-                          {addr.address}
-                        </p>
-
-                        {/* City, State - Pincode */}
-                        <p className="text-sm text-taupe/80 mt-1 font-medium">
-                          {addr.city}, {addr.state} - {addr.pincode}
-                        </p>
-
                         {/* Action Buttons: Edit | Delete | Set as Default */}
-                        <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-sand/60">
+                        <div className="flex flex-wrap items-center gap-3 mt-4 pt-3 border-t border-sand/60">
                           <button
                             type="button"
                             onClick={() => openEditModal(addr)}
