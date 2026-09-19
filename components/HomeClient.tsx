@@ -2,13 +2,14 @@
 
 import React from "react";
 import Link from "next/link";
-import { Shirt, User, EyeOff, Crown, ArrowRight, Sparkles, Heart, Truck } from "lucide-react";
+import { Sparkles, Heart, Truck } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import FeaturedProductsClient from "@/components/FeaturedProductsClient";
+import CategoryGrid from "@/components/CategoryGrid";
 import { Product } from "@/lib/products-firestore";
 import { SiteContent, defaultContent } from "@/lib/content-firestore";
 import { BRAND } from "@/lib/constants";
@@ -23,12 +24,6 @@ export default function HomeClient({
   initialProducts = [],
   content = defaultContent,
 }: HomeClientProps) {
-  const categories = [
-    { name: "Abaya", slug: "abaya", icon: Shirt, letter: "A" },
-    { name: "Burkha", slug: "burkha", icon: User, letter: "B" },
-    { name: "Niqab", slug: "niqab", icon: EyeOff, letter: "N" },
-    { name: "Hijab", slug: "hijab", icon: Crown, letter: "H" },
-  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-cream text-taupe">
@@ -204,98 +199,7 @@ export default function HomeClient({
         </section>
 
         {/* 2. CATEGORIES SECTION */}
-        <section className="w-full bg-cream py-20 border-b border-sand/30">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Section Header */}
-            <div className="text-center max-w-2xl mx-auto mb-12">
-              <motion.span
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.5 }}
-                className="text-gold text-xs tracking-[0.3em] uppercase font-semibold block"
-              >
-                CATEGORIES
-              </motion.span>
-              <motion.h2
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="font-serif text-3xl sm:text-4xl text-taupe mt-2 tracking-wide"
-              >
-                {content.categoriesTitle || "Shop by Category"}
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-taupe/60 text-center mt-3 max-w-lg mx-auto font-sans text-sm sm:text-base leading-relaxed"
-              >
-                Handcrafted modest wear for every occasion
-              </motion.p>
-            </div>
-
-            {/* Grid */}
-            <motion.div
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="animate"
-              viewport={{ once: true, amount: 0.15 }}
-              className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
-            >
-              {categories.map((cat) => {
-                const IconComponent = cat.icon;
-                return (
-                  <motion.div
-                    key={cat.slug}
-                    variants={fadeInUp}
-                    whileHover={{ scale: 1.02 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
-                  >
-                    <Link
-                      href={`/shop?c=${cat.slug}`}
-                      className="group relative aspect-[3/4] rounded-lg overflow-hidden cursor-pointer border border-sand/50 hover:border-gold transition-colors duration-300 shadow-sm hover:shadow-md block bg-gradient-to-br from-sand to-beige"
-                    >
-                      {/* Background Pattern Layer */}
-                      <div
-                        className="absolute inset-0 opacity-20 pointer-events-none"
-                        style={{
-                          backgroundImage: "radial-gradient(#6B5B4E 1.2px, transparent 1.2px)",
-                          backgroundSize: "16px 16px",
-                        }}
-                      />
-
-                      {/* Large decorative serif initial letter watermark */}
-                      <span className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 font-serif text-8xl md:text-9xl font-bold text-taupe/10 group-hover:text-gold/20 transition-colors duration-500 select-none pointer-events-none">
-                        {cat.letter}
-                      </span>
-
-                      {/* Icon layer (top, centered) */}
-                      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
-                        <IconComponent className="w-16 h-16 text-taupe/30 group-hover:text-gold transition-colors duration-300" />
-                      </div>
-
-                      {/* Subtle hover darkening layer */}
-                      <div className="absolute inset-0 bg-taupe/0 group-hover:bg-taupe/10 transition-colors duration-300 pointer-events-none" />
-
-                      {/* Content layer (bottom) */}
-                      <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/70 via-black/30 to-transparent pt-16">
-                        <span className="font-serif text-2xl font-semibold text-cream group-hover:text-gold transition-colors duration-300 block drop-shadow-md">
-                          {cat.name}
-                        </span>
-                        <span className="text-cream/90 text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1 font-sans font-medium drop-shadow-sm">
-                          Explore Collection <ArrowRight className="w-3.5 h-3.5" />
-                        </span>
-                      </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          </div>
-        </section>
+        <CategoryGrid />
 
         {/* 3. FEATURED PRODUCTS SECTION */}
         <FeaturedProductsClient

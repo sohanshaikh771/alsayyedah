@@ -51,11 +51,11 @@ export function listenCategories(callback: (categories: any[]) => void) {
   });
 }
 
-export async function getActiveCategories() {
+export async function getActiveCategories(): Promise<Category[]> {
   const q = query(collection(db, "categories"), orderBy("order", "asc"));
   const snap = await getDocs(q);
   return snap.docs
     .map((d) => ({ id: d.id, ...d.data() }))
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .filter((c: any) => c.active !== false);
+    .filter((c: any) => c.active !== false) as Category[];
 }

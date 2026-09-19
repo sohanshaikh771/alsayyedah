@@ -8,6 +8,7 @@ import { ShoppingBag, Heart, Menu, X, LogOut, User } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-store";
 import { useWishlist } from "@/lib/wishlist-store";
+import { getActiveCategories } from "@/lib/categories-firestore";
 import SearchBar from "./SearchBar";
 
 export default function Navbar() {
@@ -16,6 +17,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const [currentQuery, setCurrentQuery] = useState("");
+  const [dynamicCategories, setDynamicCategories] = useState<{ label: string; href: string }[]>([]);
 
   const { user, role, logout } = useAuth();
   const totalItems = useCart((s) => s.totalItems());
@@ -25,6 +27,27 @@ export default function Navbar() {
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Fetch dynamic categories from Firestore
+  useEffect(() => {
+    let isMounted = true;
+    getActiveCategories()
+      .then((data) => {
+        if (isMounted && data && data.length > 0) {
+          setDynamicCategories(
+            data.map((c) => ({
+              label: c.name,
+              href: `/shop?c=${c.slug}`,
+            }))
+          );
+        }
+      })
+      .catch((err) => console.warn("Navbar categories fetch error:", err));
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Update query on navigation
@@ -49,12 +72,18 @@ export default function Navbar() {
   const itemCount = mounted ? totalItems : 0;
   const wishlistCount = mounted ? totalWishlistItems : 0;
 
-  const navLinks = [
-    { label: "Shop", href: "/shop" },
+  const defaultCategoryLinks = [
     { label: "Abaya", href: "/shop?c=abaya" },
     { label: "Burkha", href: "/shop?c=burkha" },
     { label: "Niqab", href: "/shop?c=niqab" },
     { label: "Hijab", href: "/shop?c=hijab" },
+  ];
+
+  const categoryLinks = dynamicCategories.length > 0 ? dynamicCategories : defaultCategoryLinks;
+
+  const navLinks = [
+    { label: "Shop", href: "/shop" },
+    ...categoryLinks,
     { label: "About", href: "/about" },
   ];
 
