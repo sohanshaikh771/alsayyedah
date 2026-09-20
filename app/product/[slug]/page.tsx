@@ -33,7 +33,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     <div className="min-h-screen flex flex-col bg-cream text-taupe">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 pb-24 md:pb-12">
         <Suspense fallback={<ProductDetailSkeleton />}>
           <ProductDetailClient slug={resolvedParams.slug} />
         </Suspense>

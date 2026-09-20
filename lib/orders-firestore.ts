@@ -41,7 +41,14 @@ export type Order = {
   customerName: string;
   customerPhone: string;
   items: OrderItem[];
+  subtotal?: number;
+  shipping?: number;
+  codCharges?: number;
   total: number;
+  coupon?: {
+    code: string;
+    discount: number;
+  } | null;
   paymentMethod: "COD" | "ONLINE" | "WHATSAPP";
   status: "PENDING" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

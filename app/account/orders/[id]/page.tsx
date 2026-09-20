@@ -241,7 +241,7 @@ export default function OrderDetailPage() {
 
         {/* 4. Progress Tracker (full width, py-8) */}
         {!isCancelled && (
-          <div className="bg-cream border border-sand rounded-xl p-6 sm:p-8 mb-8 shadow-xs">
+          <div className="bg-cream border border-sand rounded-xl p-4 sm:p-8 mb-8 shadow-xs">
             <div className="flex items-center justify-between w-full">
               {STEP_LABELS.map((label, idx) => {
                 const isCompleted = idx < currentStep;
@@ -251,22 +251,22 @@ export default function OrderDetailPage() {
                   <React.Fragment key={label}>
                     <div className="flex flex-col items-center">
                       <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold transition-all ${
                           isCompleted
                             ? "bg-taupe text-cream shadow-xs"
                             : isCurrent
-                            ? "bg-gold text-cream ring-4 ring-gold/25 shadow-xs"
+                            ? "bg-gold text-cream ring-3 sm:ring-4 ring-gold/25 shadow-xs"
                             : "bg-cream border-2 border-sand text-taupe/40"
                         }`}
                       >
                         {isCompleted ? (
-                          <Check className="w-5 h-5" />
+                          <Check className="w-4 h-4 sm:w-5 sm:h-5" />
                         ) : (
                           <span>{idx + 1}</span>
                         )}
                       </div>
                       <span
-                        className={`text-xs uppercase tracking-wider mt-2.5 text-center font-medium ${
+                        className={`text-[10px] sm:text-xs uppercase tracking-wider mt-2 sm:mt-2.5 text-center font-medium ${
                           isCompleted || isCurrent
                             ? "text-taupe font-semibold"
                             : "text-taupe/50"
@@ -278,7 +278,7 @@ export default function OrderDetailPage() {
 
                     {idx < STEP_LABELS.length - 1 && (
                       <div
-                        className={`flex-1 h-0.5 mx-2 sm:mx-4 -mt-6 ${
+                        className={`flex-1 h-0.5 mx-1 sm:mx-4 -mt-5 sm:-mt-6 ${
                           idx < currentStep ? "bg-taupe" : "bg-sand"
                         }`}
                       />
@@ -440,12 +440,12 @@ export default function OrderDetailPage() {
         </section>
 
         {/* 10. Bottom Action Buttons */}
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-8 flex flex-col sm:flex-row gap-3">
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-taupe text-cream px-6 py-3 rounded-md flex items-center gap-2 hover:bg-gold transition font-medium text-sm shadow-xs cursor-pointer"
+            className="w-full sm:w-auto min-h-[44px] justify-center bg-taupe text-cream px-6 py-3 rounded-md flex items-center gap-2 hover:bg-gold transition font-medium text-sm shadow-xs cursor-pointer"
           >
             <MessageCircle className="w-4 h-4" />
             <span>Need Help? WhatsApp Us</span>
@@ -456,7 +456,7 @@ export default function OrderDetailPage() {
               type="button"
               disabled={cancelling}
               onClick={handleCancelOrder}
-              className="border border-red-300 text-red-600 px-6 py-3 rounded-md hover:bg-red-50 transition font-medium text-sm disabled:opacity-50 cursor-pointer"
+              className="w-full sm:w-auto min-h-[44px] justify-center border border-red-300 text-red-600 px-6 py-3 rounded-md hover:bg-red-50 transition font-medium text-sm disabled:opacity-50 cursor-pointer"
             >
               {cancelling ? "Cancelling..." : "Cancel Order"}
             </button>

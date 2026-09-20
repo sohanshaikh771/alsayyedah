@@ -13,11 +13,12 @@ import {
 import { db } from "@/lib/firebase";
 import { Loader2, CheckCircle2 } from "lucide-react";
 import ImageUploader from "./ImageUploader";
+import { getActiveCategories, Category } from "@/lib/categories-firestore";
 
 export interface ProductFormData {
   name: string;
   slug: string;
-  category: "abaya" | "burkha" | "niqab" | "hijab";
+  category: string;
   price: number | "";
   mrp?: number | "";
   fabric: string;
@@ -35,12 +36,6 @@ interface ProductFormProps {
 }
 
 const AVAILABLE_SIZES = ["S", "M", "L", "XL", "XXL", "Free"];
-const CATEGORIES: Array<"abaya" | "burkha" | "niqab" | "hijab"> = [
-  "abaya",
-  "burkha",
-  "niqab",
-  "hijab",
-];
 
 export default function ProductForm({
   initialData,
@@ -48,14 +43,17 @@ export default function ProductForm({
 }: ProductFormProps) {
   const router = useRouter();
 
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
   const [name, setName] = useState(initialData?.name || "");
   const [slug, setSlug] = useState(initialData?.slug || "");
   const [isSlugManual, setIsSlugManual] = useState(
     Boolean(initialData?.slug)
   );
-  const [category, setCategory] = useState<
-    "abaya" | "burkha" | "niqab" | "hijab"
-  >(initialData?.category || "abaya");
+  const [category, setCategory] = useState<string>(
+    initialData?.category || ""
+  );
   const [price, setPrice] = useState<number | "">(
     initialData?.price !== undefined ? initialData.price : ""
   );
@@ -104,6 +102,15 @@ export default function ProductForm({
     }
   }, [initialData]);
 
+  useEffect(() => {
+    getActiveCategories()
+      .then((data) => {
+        setCategories(data);
+        setLoadingCategories(false);
+      })
+      .catch(() => setLoadingCategories(false));
+  }, []);
+
   // Auto-generate slug from name if not manually modified
   const generateSlug = (value: string) => {
     return value
@@ -138,6 +145,7 @@ export default function ProductForm({
 
     if (!name.trim()) newErrors.name = "Product name is required";
     if (!slug.trim()) newErrors.slug = "Product slug is required";
+    if (!category.trim()) newErrors.category = "Category is required";
     if (price === "" || isNaN(Number(price)) || Number(price) < 0) {
       newErrors.price = "Valid price is required (>= 0)";
     }
@@ -216,7 +224,7 @@ export default function ProductForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white border border-sand rounded-xl p-6 sm:p-8 shadow-xs space-y-6"
+      className="bg-white border border-sand rounded-xl p-4 sm:p-8 shadow-xs space-y-6"
     >
       {errors.form && (
         <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-md">
@@ -232,7 +240,7 @@ export default function ProductForm({
       )}
 
       {/* Grid: Name & Slug */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-taupe mb-1.5">
             Product Name <span className="text-red-500">*</span>
@@ -242,7 +250,7 @@ export default function ProductForm({
             value={name}
             onChange={handleNameChange}
             placeholder="e.g. Noor Embroidered Abaya"
-            className="w-full bg-cream border border-sand rounded-md px-3 py-2 text-taupe placeholder:text-taupe/40 focus:border-gold focus:outline-none transition-colors"
+            className="w-full bg-cream border border-sand rounded-md px-3 py-2.5 text-base sm:text-sm min-h-[44px] text-taupe placeholder:text-taupe/40 focus:border-gold focus:outline-none transition-colors"
           />
           {errors.name && (
             <p className="text-xs text-red-600 mt-1">{errors.name}</p>
@@ -258,7 +266,7 @@ export default function ProductForm({
             value={slug}
             onChange={handleSlugChange}
             placeholder="e.g. noor-embroidered-abaya"
-            className="w-full bg-cream border border-sand rounded-md px-3 py-2 text-taupe placeholder:text-taupe/40 focus:border-gold focus:outline-none transition-colors"
+            className="w-full bg-cream border border-sand rounded-md px-3 py-2.5 text-base sm:text-sm min-h-[44px] text-taupe placeholder:text-taupe/40 focus:border-gold focus:outline-none transition-colors"
           />
           {errors.slug && (
             <p className="text-xs text-red-600 mt-1">{errors.slug}</p>
@@ -270,24 +278,34 @@ export default function ProductForm({
       </div>
 
       {/* Grid: Category, Fabric */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-taupe mb-1.5">
             Category <span className="text-red-500">*</span>
           </label>
           <select
             value={category}
-            onChange={(e) =>
-              setCategory(e.target.value as "abaya" | "burkha" | "niqab" | "hijab")
-            }
-            className="w-full bg-cream border border-sand rounded-md px-3 py-2 text-taupe focus:border-gold focus:outline-none transition-colors capitalize"
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full bg-cream border border-sand rounded-md px-3 py-2.5 text-base sm:text-sm min-h-[44px] text-taupe focus:border-gold focus:outline-none transition-colors"
+            disabled={loadingCategories}
           >
-            {CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+            <option value="">
+              {loadingCategories ? "Loading..." : "Select category"}
+            </option>
+            {category && !categories.some((cat) => cat.slug === category) && (
+              <option value={category} className="text-taupe/60">
+                {category.charAt(0).toUpperCase() + category.slice(1)} (inactive)
+              </option>
+            )}
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.slug}>
+                {cat.name}
               </option>
             ))}
           </select>
+          {errors.category && (
+            <p className="text-xs text-red-600 mt-1">{errors.category}</p>
+          )}
         </div>
 
         <div>
@@ -299,7 +317,7 @@ export default function ProductForm({
             value={fabric}
             onChange={(e) => setFabric(e.target.value)}
             placeholder="e.g. Korean Nida, Saudi Crepe, Chiffon"
-            className="w-full bg-cream border border-sand rounded-md px-3 py-2 text-taupe placeholder:text-taupe/40 focus:border-gold focus:outline-none transition-colors"
+            className="w-full bg-cream border border-sand rounded-md px-3 py-2.5 text-base sm:text-sm min-h-[44px] text-taupe placeholder:text-taupe/40 focus:border-gold focus:outline-none transition-colors"
           />
           {errors.fabric && (
             <p className="text-xs text-red-600 mt-1">{errors.fabric}</p>
@@ -308,7 +326,7 @@ export default function ProductForm({
       </div>
 
       {/* Grid: Price, MRP, Stock */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-taupe mb-1.5">
             Selling Price (₹) <span className="text-red-500">*</span>
@@ -322,7 +340,7 @@ export default function ProductForm({
               setPrice(e.target.value === "" ? "" : Number(e.target.value))
             }
             placeholder="e.g. 1899"
-            className="w-full bg-cream border border-sand rounded-md px-3 py-2 text-taupe placeholder:text-taupe/40 focus:border-gold focus:outline-none transition-colors"
+            className="w-full bg-cream border border-sand rounded-md px-3 py-2.5 text-base sm:text-sm min-h-[44px] text-taupe placeholder:text-taupe/40 focus:border-gold focus:outline-none transition-colors"
           />
           {errors.price && (
             <p className="text-xs text-red-600 mt-1">{errors.price}</p>
@@ -342,7 +360,7 @@ export default function ProductForm({
               setMrp(e.target.value === "" ? "" : Number(e.target.value))
             }
             placeholder="e.g. 2499"
-            className="w-full bg-cream border border-sand rounded-md px-3 py-2 text-taupe placeholder:text-taupe/40 focus:border-gold focus:outline-none transition-colors"
+            className="w-full bg-cream border border-sand rounded-md px-3 py-2.5 text-base sm:text-sm min-h-[44px] text-taupe placeholder:text-taupe/40 focus:border-gold focus:outline-none transition-colors"
           />
           {errors.mrp && (
             <p className="text-xs text-red-600 mt-1">{errors.mrp}</p>
@@ -362,7 +380,7 @@ export default function ProductForm({
               setStock(e.target.value === "" ? "" : Number(e.target.value))
             }
             placeholder="e.g. 25"
-            className="w-full bg-cream border border-sand rounded-md px-3 py-2 text-taupe placeholder:text-taupe/40 focus:border-gold focus:outline-none transition-colors"
+            className="w-full bg-cream border border-sand rounded-md px-3 py-2.5 text-base sm:text-sm min-h-[44px] text-taupe placeholder:text-taupe/40 focus:border-gold focus:outline-none transition-colors"
           />
           {errors.stock && (
             <p className="text-xs text-red-600 mt-1">{errors.stock}</p>

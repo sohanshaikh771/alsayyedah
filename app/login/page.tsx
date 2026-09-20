@@ -62,9 +62,12 @@ export default function LoginPage() {
       <Navbar />
 
       <main className="flex-1 max-w-md mx-auto px-4 py-20 w-full">
-        <h1 className="font-serif text-3xl text-taupe text-center mb-8">
+        <h1 className="font-serif text-3xl text-taupe text-center mb-1">
           Login / Sign Up
         </h1>
+        <p className="font-amiri text-2xl text-gold/70 text-center mb-6" dir="rtl">
+          السيدة
+        </p>
 
         {/* White/cream card */}
         <div className="bg-white/80 p-6 sm:p-8 rounded-md border border-sand shadow-2xs">

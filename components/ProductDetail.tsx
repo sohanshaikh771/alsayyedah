@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, Minus, Plus, Truck, Banknote, ShieldCheck } from "lucide-react";
 import toast from "react-hot-toast";
 import { Product } from "@/lib/products-firestore";
@@ -30,6 +30,30 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const [selectedColor, setSelectedColor] = useState(product.colors[0] || "");
   const [quantity, setQuantity] = useState(1);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [showStickyBar, setShowStickyBar] = useState(false);
+
+  const mainCtaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Show sticky bar when main CTA is scrolled above viewport on mobile
+        setShowStickyBar(!entry.isIntersecting && entry.boundingClientRect.top < 0);
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentEl = mainCtaRef.current;
+    if (currentEl) {
+      observer.observe(currentEl);
+    }
+
+    return () => {
+      if (currentEl) {
+        observer.unobserve(currentEl);
+      }
+    };
+  }, []);
 
   const hasDiscount = Boolean(product.mrp && product.mrp > product.price);
   const discountPercent =
@@ -147,7 +171,7 @@ Please let me know how to proceed with payment and shipping.`;
 
         {/* Thumbnails Row */}
         {product.images.length > 1 && (
-          <div className="flex items-center gap-3 overflow-x-auto pb-2">
+          <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none snap-x touch-pan-x">
             {product.images.map((imgSrc, idx) => {
               const isActive = selectedImageIndex === idx;
               return (
@@ -155,7 +179,7 @@ Please let me know how to proceed with payment and shipping.`;
                   key={idx}
                   type="button"
                   onClick={() => setSelectedImageIndex(idx)}
-                  className={`relative w-16 h-20 flex-shrink-0 rounded-md overflow-hidden border-2 bg-sand/30 transition-all ${
+                  className={`relative w-16 h-20 flex-shrink-0 rounded-md overflow-hidden border-2 bg-sand/30 transition-all snap-start ${
                     isActive
                       ? "border-gold shadow-sm scale-105"
                       : "border-transparent hover:border-sand"
@@ -203,7 +227,7 @@ Please let me know how to proceed with payment and shipping.`;
         </div>
 
         {/* Price Row */}
-        <div className="flex items-baseline gap-3 pt-1 border-b border-sand/60 pb-5">
+        <div className="flex items-baseline gap-3 pt-1 border-b border-sand/60 pb-5 flex-wrap">
           <span className="text-2xl sm:text-3xl font-bold text-taupe">
             ₹{product.price.toLocaleString("en-IN")}
           </span>
@@ -234,7 +258,7 @@ Please let me know how to proceed with payment and shipping.`;
               <button
                 type="button"
                 onClick={() => setShowSizeGuide(true)}
-                className="text-xs text-taupe underline hover:text-gold cursor-pointer transition-colors"
+                className="text-xs text-taupe underline hover:text-gold cursor-pointer transition-colors p-1"
               >
                 Size Guide
               </button>
@@ -247,7 +271,7 @@ Please let me know how to proceed with payment and shipping.`;
                     key={size}
                     type="button"
                     onClick={() => setSelectedSize(size)}
-                    className={`min-w-[44px] px-3.5 py-2 text-sm font-medium rounded-md border transition-all ${
+                    className={`min-w-[44px] min-h-[44px] px-3.5 py-2 text-sm font-medium rounded-md border transition-all flex items-center justify-center cursor-pointer ${
                       isSelected
                         ? "bg-taupe text-cream border-taupe shadow-sm"
                         : "bg-cream text-taupe border-sand hover:border-gold hover:text-gold"
@@ -268,7 +292,7 @@ Please let me know how to proceed with payment and shipping.`;
               <button
                 type="button"
                 onClick={() => setShowSizeGuide(true)}
-                className="text-xs text-taupe underline hover:text-gold cursor-pointer transition-colors"
+                className="text-xs text-taupe underline hover:text-gold cursor-pointer transition-colors p-1"
               >
                 Size Guide
               </button>
@@ -290,7 +314,7 @@ Please let me know how to proceed with payment and shipping.`;
                     key={color}
                     type="button"
                     onClick={() => setSelectedColor(color)}
-                    className={`px-4 py-2 text-sm font-medium rounded-md border transition-all ${
+                    className={`min-w-[44px] min-h-[44px] px-4 py-2 text-sm font-medium rounded-md border transition-all flex items-center justify-center cursor-pointer ${
                       isSelected
                         ? "bg-taupe text-cream border-taupe shadow-sm"
                         : "bg-cream text-taupe border-sand hover:border-gold hover:text-gold"
@@ -314,7 +338,7 @@ Please let me know how to proceed with payment and shipping.`;
               type="button"
               onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
               disabled={quantity <= 1}
-              className="p-2.5 text-taupe hover:text-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center text-taupe hover:text-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               aria-label="Decrease quantity"
             >
               <Minus className="w-4 h-4" />
@@ -326,7 +350,7 @@ Please let me know how to proceed with payment and shipping.`;
               type="button"
               onClick={() => setQuantity((prev) => Math.min(10, prev + 1))}
               disabled={quantity >= 10}
-              className="p-2.5 text-taupe hover:text-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center text-taupe hover:text-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               aria-label="Increase quantity"
             >
               <Plus className="w-4 h-4" />
@@ -335,13 +359,13 @@ Please let me know how to proceed with payment and shipping.`;
         </div>
 
         {/* ACTION BUTTONS */}
-        <div className="pt-2 flex flex-col gap-3">
+        <div ref={mainCtaRef} className="pt-2 flex flex-col gap-3">
           <div className="flex items-center gap-3">
             <PremiumButton
               onClick={handleAddToCart}
               variant="primary"
               size="md"
-              className="flex-1 py-3.5"
+              className="flex-1 py-3.5 min-h-[44px]"
             >
               Add to Cart
             </PremiumButton>
@@ -349,7 +373,7 @@ Please let me know how to proceed with payment and shipping.`;
             <WishlistButton
               product={product}
               variant="icon"
-              className="w-12 h-12 border border-sand rounded-md bg-cream hover:bg-beige flex-shrink-0"
+              className="w-12 h-12 min-w-[48px] min-h-[48px] border border-sand rounded-md bg-cream hover:bg-beige flex-shrink-0"
             />
           </div>
 
@@ -358,7 +382,7 @@ Please let me know how to proceed with payment and shipping.`;
             target="_blank"
             variant="outline"
             size="md"
-            className="w-full py-3.5 gap-2"
+            className="w-full py-3.5 min-h-[44px] gap-2"
           >
             <MessageCircle className="w-4 h-4" />
             <span>Order on WhatsApp</span>
@@ -400,6 +424,54 @@ Please let me know how to proceed with payment and shipping.`;
         />
       </div>
     </section>
+
+    {/* STICKY MOBILE ADD TO CART BAR */}
+    <AnimatePresence>
+      {showStickyBar && (
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 100, opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed bottom-0 left-0 right-0 z-40 bg-cream/95 backdrop-blur-md border-t border-sand p-3 shadow-2xl md:hidden pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+        >
+          <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
+            <div className="flex items-center gap-2.5 min-w-0">
+              {product.images[0] && (
+                <img
+                  src={product.images[0]}
+                  alt={product.name}
+                  className="w-10 h-12 object-cover rounded bg-sand flex-shrink-0 border border-sand"
+                />
+              )}
+              <div className="min-w-0">
+                <p className="font-serif text-sm font-medium text-taupe truncate leading-tight">
+                  {product.name}
+                </p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="text-xs font-bold text-taupe">
+                    ₹{product.price.toLocaleString("en-IN")}
+                  </span>
+                  {hasDiscount && product.mrp && (
+                    <span className="text-[10px] text-taupe/50 line-through">
+                      ₹{product.mrp.toLocaleString("en-IN")}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="bg-taupe text-cream px-5 py-2.5 rounded-md text-xs font-semibold uppercase tracking-wider hover:bg-gold transition-colors flex-shrink-0 min-h-[44px] flex items-center justify-center cursor-pointer shadow-sm active:scale-95"
+            >
+              Add to Cart
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
 
     {/* SIZE GUIDE MODAL */}
     <SizeGuideModal

@@ -19,13 +19,7 @@ interface ShopPageProps {
     | Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-const filterOptions = [
-  { label: "All", value: "all", href: "/shop" },
-  { label: "Abaya", value: "abaya", href: "/shop?c=abaya" },
-  { label: "Burkha", value: "burkha", href: "/shop?c=burkha" },
-  { label: "Niqab", value: "niqab", href: "/shop?c=niqab" },
-  { label: "Hijab", value: "hijab", href: "/shop?c=hijab" },
-];
+import { getActiveCategories } from "@/lib/categories-firestore";
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const resolvedParams =
@@ -33,19 +27,37 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
   const rawParam =
     typeof resolvedParams?.c === "string"
-      ? resolvedParams.c.toLowerCase()
+      ? resolvedParams.c.toLowerCase().trim()
       : Array.isArray(resolvedParams?.c)
-      ? resolvedParams.c[0]?.toLowerCase()
+      ? resolvedParams.c[0]?.toLowerCase().trim()
       : undefined;
 
-  const activeCategory =
-    rawParam && ["abaya", "burkha", "niqab", "hijab"].includes(rawParam)
-      ? rawParam
-      : "all";
+  const categories = await getActiveCategories().catch(() => []);
 
+  const activeCategory = rawParam && rawParam !== "all" ? rawParam : "all";
+
+  const filterOptions = [
+    { label: "All", value: "all", href: "/shop" },
+    ...(categories.length > 0
+      ? categories.map((cat) => ({
+          label: cat.name,
+          value: cat.slug,
+          href: `/shop?c=${cat.slug}`,
+        }))
+      : [
+          { label: "Abaya", value: "abaya", href: "/shop?c=abaya" },
+          { label: "Burkha", value: "burkha", href: "/shop?c=burkha" },
+          { label: "Niqab", value: "niqab", href: "/shop?c=niqab" },
+          { label: "Hijab", value: "hijab", href: "/shop?c=hijab" },
+        ]),
+  ];
+
+  const matchingCategory = categories.find((cat) => cat.slug === activeCategory);
   const pageTitle =
     activeCategory === "all"
       ? "All Products"
+      : matchingCategory
+      ? matchingCategory.name
       : activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1);
 
   return (

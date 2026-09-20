@@ -108,11 +108,16 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Left: Brand Logo */}
           <div className="flex-shrink-0">
-            <Link
-              href="/"
-              className="font-serif text-2xl md:text-3xl tracking-wide text-taupe hover:text-gold transition-colors duration-300 select-none"
-            >
-              ALSayyedah
+            <Link href="/" className="flex items-baseline gap-2 md:gap-3 group select-none">
+              <span className="font-italiana text-2xl md:text-4xl text-taupe tracking-[0.12em] group-hover:text-gold transition-colors duration-300">
+                ALSayyedah
+              </span>
+              <span 
+                className="hidden md:inline font-amiri text-xl md:text-2xl text-gold/70 group-hover:text-gold transition-colors duration-300" 
+                dir="rtl"
+              >
+                السيدة
+              </span>
             </Link>
           </div>
 
@@ -143,20 +148,20 @@ export default function Navbar() {
           </nav>
 
           {/* Right Side Icons */}
-          <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3">
+          <div className="flex items-center space-x-1 sm:space-x-1.5 md:space-x-2">
             {/* a) Search Icon */}
             <SearchBar />
 
             {/* b) Wishlist Icon */}
             <Link
               href="/wishlist"
-              className="relative p-2 hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 group flex items-center justify-center"
+              className="relative p-2 min-w-[40px] min-h-[40px] hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 group flex items-center justify-center"
               aria-label="Wishlist"
               title="Wishlist"
             >
               <Heart className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
               {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-gold text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-semibold shadow-xs">
+                <span className="absolute 1 top-0.5 right-0.5 bg-gold text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-semibold shadow-xs">
                   {wishlistCount}
                 </span>
               )}
@@ -165,20 +170,20 @@ export default function Navbar() {
             {/* c) Cart Icon */}
             <Link
               href="/cart"
-              className="relative p-2 hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 group flex items-center justify-center"
+              className="relative p-2 min-w-[40px] min-h-[40px] hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 group flex items-center justify-center"
               aria-label="Shopping Cart"
               title="Shopping Cart"
             >
               <ShoppingBag className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
               {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-gold text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-semibold shadow-xs">
+                <span className="absolute top-0.5 right-0.5 bg-gold text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-semibold shadow-xs">
                   {itemCount}
                 </span>
               )}
             </Link>
 
-            {/* d & e & f) User / Admin / Auth Section */}
-            <div className="hidden sm:flex items-center space-x-2">
+            {/* d & e & f) User / Admin / Auth Section: DESKTOP ONLY (hidden md:flex) */}
+            <div className="hidden md:flex items-center space-x-2">
               {user ? (
                 <div className="flex items-center space-x-2 text-sm text-taupe">
                   {/* d) Admin badge */}
@@ -195,7 +200,7 @@ export default function Navbar() {
                   {/* e) User Icon */}
                   <Link
                     href="/account"
-                    className="p-2 hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 group flex items-center justify-center"
+                    className="p-2 min-w-[40px] min-h-[40px] hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 group flex items-center justify-center"
                     title="My Account"
                     aria-label="My Account"
                   >
@@ -206,7 +211,7 @@ export default function Navbar() {
                   <button
                     type="button"
                     onClick={() => logout()}
-                    className="p-2 hover:bg-beige rounded-full text-taupe hover:text-red-500 transition-all duration-200 cursor-pointer flex items-center justify-center group"
+                    className="p-2 min-w-[40px] min-h-[40px] hover:bg-beige rounded-full text-taupe hover:text-red-500 transition-all duration-200 cursor-pointer flex items-center justify-center group"
                     title="Logout"
                     aria-label="Logout"
                   >
@@ -216,7 +221,7 @@ export default function Navbar() {
               ) : (
                 <Link
                   href="/login"
-                  className="bg-taupe text-cream px-4 py-2 rounded-md hover:bg-gold transition-all duration-300 text-xs font-medium uppercase tracking-wider font-sans shadow-xs hover:shadow-sm inline-flex items-center justify-center"
+                  className="bg-taupe text-cream px-4 py-2 min-h-[38px] rounded-md hover:bg-gold transition-all duration-300 text-xs font-medium uppercase tracking-wider font-sans shadow-xs hover:shadow-sm inline-flex items-center justify-center"
                 >
                   Login
                 </Link>
@@ -228,7 +233,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 focus:outline-none cursor-pointer flex items-center justify-center"
+                className="p-2 min-w-[44px] min-h-[44px] hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 focus:outline-none cursor-pointer flex items-center justify-center"
                 aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               >
                 {mobileMenuOpen ? (

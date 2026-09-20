@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, ShieldCheck, ChevronLeft, Tag, X } from "lucide-react";
+import { Loader2, ShieldCheck, ChevronLeft, ChevronDown, ChevronUp, Tag, X } from "lucide-react";
 import { increment } from "firebase/firestore";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -27,6 +27,7 @@ export default function CheckoutPage() {
 
   const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showMobileSummary, setShowMobileSummary] = useState(false);
 
   // Saved Addresses State
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
@@ -368,7 +369,7 @@ Please confirm my order. Shukriya! 🙏`;
     <div className="min-h-screen flex flex-col bg-cream text-taupe">
       <Navbar />
 
-      <main className="flex-1 max-w-6xl mx-auto px-4 py-8 sm:py-12 w-full">
+      <main className="flex-1 max-w-6xl mx-auto px-4 py-8 sm:py-12 pb-28 lg:pb-12 w-full">
         {/* Navigation Breadcrumb */}
         <div className="mb-6">
           <Link
@@ -380,11 +381,92 @@ Please confirm my order. Shukriya! 🙏`;
           </Link>
         </div>
 
-        <h1 className="font-serif text-3xl sm:text-4xl text-taupe mb-8">
+        <h1 className="font-serif text-3xl sm:text-4xl text-taupe mb-6 sm:mb-8">
           Checkout
         </h1>
 
         <form onSubmit={handleSubmit} noValidate>
+          {/* Mobile Collapsible Order Summary Accordion (lg:hidden) */}
+          <div className="lg:hidden mb-6 border border-sand rounded-lg overflow-hidden bg-beige/60">
+            <button
+              type="button"
+              onClick={() => setShowMobileSummary(!showMobileSummary)}
+              className="w-full px-4 py-3.5 flex items-center justify-between text-sm font-medium text-taupe bg-beige border-b border-sand/40 cursor-pointer min-h-[44px]"
+              aria-expanded={showMobileSummary}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-sm">🛍️</span>
+                <span>{showMobileSummary ? "Hide Order Summary" : "Show Order Summary"}</span>
+                {showMobileSummary ? (
+                  <ChevronUp className="w-4 h-4 text-taupe/60" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-taupe/60" />
+                )}
+              </div>
+              <span className="font-serif text-base font-bold text-taupe">
+                ₹{total.toLocaleString("en-IN")}
+              </span>
+            </button>
+
+            {showMobileSummary && (
+              <div className="p-4 space-y-3 bg-cream/80">
+                <div className="max-h-48 overflow-y-auto space-y-2.5 divide-y divide-sand/40 pr-1">
+                  {items.map((item) => (
+                    <div
+                      key={`${item.productId}-${item.size}-${item.color}`}
+                      className="pt-2 first:pt-0 flex items-center gap-3"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-12 h-14 object-cover rounded bg-sand/30 flex-shrink-0"
+                      />
+                      <div className="flex-1 min-w-0 text-xs">
+                        <p className="font-serif text-taupe font-medium truncate">
+                          {item.name}
+                        </p>
+                        <p className="text-taupe/60 text-[11px] mt-0.5">
+                          {item.size} • {item.color} • Qty: {item.qty}
+                        </p>
+                        <p className="font-semibold text-taupe mt-0.5">
+                          ₹{(item.price * item.qty).toLocaleString("en-IN")}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="border-t border-sand/60 pt-3 space-y-1.5 text-xs text-taupe/80">
+                  <div className="flex justify-between">
+                    <span>Subtotal</span>
+                    <span className="font-medium text-taupe">₹{subtotal.toLocaleString("en-IN")}</span>
+                  </div>
+                  {appliedCoupon && (
+                    <div className="flex justify-between text-green-700 font-medium">
+                      <span>Coupon ({appliedCoupon.code})</span>
+                      <span>-₹{appliedCoupon.discount.toLocaleString("en-IN")}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span>Shipping</span>
+                    <span className={`font-medium ${isFreeShipping ? "text-emerald-700" : "text-taupe"}`}>
+                      {isFreeShipping ? "FREE" : `₹${shippingFee}`}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>COD Charges</span>
+                    <span className="font-medium text-taupe">₹{codFee}</span>
+                  </div>
+                  <div className="border-t border-sand pt-2 flex justify-between items-baseline font-semibold text-sm text-taupe">
+                    <span>Total Amount</span>
+                    <span className="font-serif text-lg text-taupe">₹{total.toLocaleString("en-IN")}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             {/* LEFT COLUMN: Delivery Address Form (lg:col-span-2) */}
             <div className="lg:col-span-2 bg-cream rounded-lg space-y-6">
@@ -509,7 +591,7 @@ Please confirm my order. Shukriya! 🙏`;
                       handleInputChange("fullName", e.target.value, setFullName)
                     }
                     placeholder="e.g. Fatima Shaikh"
-                    className={`w-full bg-beige/40 border rounded px-3.5 py-2.5 text-sm text-taupe placeholder:text-taupe/40 focus:outline-none transition-colors ${
+                    className={`w-full bg-beige/40 border rounded px-4 py-3 text-base sm:text-sm text-taupe placeholder:text-taupe/40 focus:outline-none transition-colors min-h-[44px] ${
                       errors.fullName
                         ? "border-red-500 focus:border-red-600 bg-red-50/20"
                         : "border-sand focus:border-gold"
@@ -526,7 +608,7 @@ Please confirm my order. Shukriya! 🙏`;
                     Phone Number (10 digits) <span className="text-red-500">*</span>
                   </label>
                   <div className="relative flex items-center">
-                    <span className="absolute left-3 text-sm text-taupe/60 font-medium select-none">
+                    <span className="absolute left-3.5 text-sm text-taupe/60 font-medium select-none">
                       +91
                     </span>
                     <input
@@ -541,7 +623,7 @@ Please confirm my order. Shukriya! 🙏`;
                         )
                       }
                       placeholder="9876543210"
-                      className={`w-full bg-beige/40 border rounded pl-12 pr-3.5 py-2.5 text-sm text-taupe placeholder:text-taupe/40 focus:outline-none transition-colors ${
+                      className={`w-full bg-beige/40 border rounded pl-14 pr-3.5 py-3 text-base sm:text-sm text-taupe placeholder:text-taupe/40 focus:outline-none transition-colors min-h-[44px] ${
                         errors.phone
                           ? "border-red-500 focus:border-red-600 bg-red-50/20"
                           : "border-sand focus:border-gold"
@@ -565,7 +647,7 @@ Please confirm my order. Shukriya! 🙏`;
                       handleInputChange("address", e.target.value, setAddress)
                     }
                     placeholder="House/Flat no., Building name, Street, Area, Landmark"
-                    className={`w-full bg-beige/40 border rounded px-3.5 py-2.5 text-sm text-taupe placeholder:text-taupe/40 focus:outline-none transition-colors resize-y ${
+                    className={`w-full bg-beige/40 border rounded px-4 py-3 text-base sm:text-sm text-taupe placeholder:text-taupe/40 focus:outline-none transition-colors resize-y ${
                       errors.address
                         ? "border-red-500 focus:border-red-600 bg-red-50/20"
                         : "border-sand focus:border-gold"
@@ -588,7 +670,7 @@ Please confirm my order. Shukriya! 🙏`;
                       handleInputChange("city", e.target.value, setCity)
                     }
                     placeholder="e.g. Mumbai"
-                    className={`w-full bg-beige/40 border rounded px-3.5 py-2.5 text-sm text-taupe placeholder:text-taupe/40 focus:outline-none transition-colors ${
+                    className={`w-full bg-beige/40 border rounded px-4 py-3 text-base sm:text-sm text-taupe placeholder:text-taupe/40 focus:outline-none transition-colors min-h-[44px] ${
                       errors.city
                         ? "border-red-500 focus:border-red-600 bg-red-50/20"
                         : "border-sand focus:border-gold"
@@ -609,7 +691,7 @@ Please confirm my order. Shukriya! 🙏`;
                     onChange={(e) =>
                       handleInputChange("state", e.target.value, setState)
                     }
-                    className={`w-full bg-beige/40 border rounded px-3.5 py-2.5 text-sm text-taupe focus:outline-none transition-colors cursor-pointer ${
+                    className={`w-full bg-beige/40 border rounded px-3.5 py-3 text-base sm:text-sm text-taupe focus:outline-none transition-colors cursor-pointer min-h-[44px] ${
                       errors.state
                         ? "border-red-500 focus:border-red-600 bg-red-50/20"
                         : "border-sand focus:border-gold"
@@ -644,7 +726,7 @@ Please confirm my order. Shukriya! 🙏`;
                       )
                     }
                     placeholder="e.g. 400001"
-                    className={`w-full bg-beige/40 border rounded px-3.5 py-2.5 text-sm text-taupe placeholder:text-taupe/40 focus:outline-none transition-colors ${
+                    className={`w-full bg-beige/40 border rounded px-4 py-3 text-base sm:text-sm text-taupe placeholder:text-taupe/40 focus:outline-none transition-colors min-h-[44px] ${
                       errors.pincode
                         ? "border-red-500 focus:border-red-600 bg-red-50/20"
                         : "border-sand focus:border-gold"
@@ -894,6 +976,32 @@ Please confirm my order. Shukriya! 🙏`;
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Sticky Mobile Place Order Bar (lg:hidden) */}
+          <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-cream/95 backdrop-blur-md border-t border-sand p-3 shadow-xl pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="max-w-md mx-auto flex items-center justify-between gap-3">
+              <div>
+                <span className="text-[10px] text-taupe/60 block leading-tight">Total (COD)</span>
+                <span className="font-serif text-lg font-bold text-taupe">
+                  ₹{total.toLocaleString("en-IN")}
+                </span>
+              </div>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="flex-1 bg-taupe text-cream py-3 px-5 rounded-md hover:bg-gold transition-colors font-medium text-sm flex items-center justify-center gap-2 min-h-[48px] cursor-pointer disabled:opacity-50 active:scale-95 shadow-md"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Placing Order...</span>
+                  </>
+                ) : (
+                  <span>Place Order</span>
+                )}
+              </button>
             </div>
           </div>
         </form>

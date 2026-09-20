@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Playfair_Display, Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Italiana, Amiri, Playfair_Display, Inter } from "next/font/google";
 import { AuthProvider } from "@/lib/auth-context";
 import BannerStrip from "@/components/BannerStrip";
 import ScrollProgress from "@/components/ScrollProgress";
@@ -9,22 +9,92 @@ import PageTransition from "@/components/PageTransition";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
+const italiana = Italiana({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-italiana",
+});
+
+const amiri = Amiri({
+  subsets: ["arabic"],
+  weight: ["400", "700"],
+  variable: "--font-amiri",
+});
+
 const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   variable: "--font-playfair",
 });
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
   variable: "--font-inter",
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#6B5B4E",
+};
+
 export const metadata: Metadata = {
-  title: "ALSayyedah — Your Modest Identity",
-  description:
-    "Premium Burkha, Abaya, Niqab & Hijab. Handcrafted modest fashion delivered across India.",
+  metadataBase: new URL("https://alsayyedah.in"),
+  title: {
+    default: "ALSayyedah — Your Modest Identity | Premium Abaya, Burkha, Niqab & Hijab",
+    template: "%s | ALSayyedah",
+  },
+  description: "Discover premium modest fashion at ALSayyedah. Handcrafted Abaya, Burkha, Niqab, and Hijab made with love. Pan-India delivery, COD available.",
+  keywords: ["abaya", "burkha", "niqab", "hijab", "modest fashion", "islamic clothing", "ALSayyedah", "modest wear", "burqa", "muslim fashion"],
+  authors: [{ name: "ALSayyedah" }],
+  creator: "ALSayyedah",
+  publisher: "ALSayyedah",
+  
+  // Open Graph (WhatsApp, Facebook, LinkedIn)
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://alsayyedah.in",
+    siteName: "ALSayyedah",
+    title: "ALSayyedah — Your Modest Identity",
+    description: "Premium Abaya, Burkha, Niqab & Hijab. Handcrafted modest fashion delivered across India.",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "ALSayyedah — Your Modest Identity",
+      },
+    ],
+  },
+  
+  // Twitter
+  twitter: {
+    card: "summary_large_image",
+    title: "ALSayyedah — Your Modest Identity",
+    description: "Premium Abaya, Burkha, Niqab & Hijab. Handcrafted modest fashion.",
+    images: ["/og-image.jpg"],
+  },
+  
+  // Icons
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: "/apple-icon.png",
+  },
+  
+  // Robots
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+    },
+  },
 };
 
 export default function RootLayout({
@@ -33,9 +103,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
+    <html lang="en" className={`${italiana.variable} ${amiri.variable} ${playfair.variable} ${inter.variable}`}>
       <body
-        className={`${playfair.variable} ${inter.variable} bg-cream text-taupe font-sans antialiased min-h-screen flex flex-col`}
+        className={`${italiana.variable} ${amiri.variable} ${playfair.variable} ${inter.variable} bg-cream text-taupe font-sans antialiased min-h-screen flex flex-col`}
       >
         <AuthProvider>
           <ScrollProgress />

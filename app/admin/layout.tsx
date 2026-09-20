@@ -125,20 +125,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="p-2 text-taupe hover:text-gold md:hidden focus:outline-none rounded hover:bg-beige transition-colors"
+                className="p-2.5 text-taupe hover:text-gold md:hidden focus:outline-none rounded hover:bg-beige transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer"
                 aria-label="Open sidebar"
               >
                 <Menu className="w-6 h-6" />
               </button>
-              <span className="hidden sm:inline-block font-serif text-lg text-taupe font-medium">
+              <span className="font-serif text-base sm:text-lg text-taupe font-medium">
                 Admin Console
               </span>
             </div>
 
-            <div className="flex items-center space-x-3 sm:space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <Link
                 href="/"
-                className="flex items-center space-x-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium text-taupe hover:text-gold border border-sand rounded-md hover:bg-beige transition-colors"
+                className="flex items-center space-x-1.5 px-3 py-2 text-xs sm:text-sm font-medium text-taupe hover:text-gold border border-sand rounded-md hover:bg-beige transition-colors min-h-[38px]"
               >
                 <span>View Site</span>
                 <ExternalLink className="w-3.5 h-3.5 text-taupe/70" />
@@ -146,7 +146,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
               <button
                 onClick={() => logout()}
-                className="flex items-center space-x-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium text-taupe/80 hover:text-red-700 rounded-md hover:bg-beige transition-colors"
+                className="flex items-center space-x-1.5 px-3 py-2 text-xs sm:text-sm font-medium text-taupe/80 hover:text-red-700 rounded-md hover:bg-beige transition-colors min-h-[38px] cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
                 <span className="hidden sm:inline">Logout</span>
@@ -155,7 +155,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </header>
 
           {/* Main content area */}
-          <main className="flex-1 p-8 bg-cream">
+          <main className="flex-1 p-4 sm:p-6 md:p-8 bg-cream min-w-0 overflow-x-hidden">
             {children}
           </main>
         </div>

@@ -25,7 +25,7 @@ export default function WhatsAppButton() {
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="fixed bottom-6 right-6 z-40 flex items-center group"
+      className="fixed bottom-5 sm:bottom-6 right-4 sm:right-6 z-40 flex items-center group"
     >
       {/* Label tooltip on hover (desktop only) */}
       <div className="hidden md:block mr-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">

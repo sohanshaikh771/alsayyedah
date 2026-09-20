@@ -28,7 +28,7 @@ export default function TrackOrderPage() {
     <div className="min-h-screen flex flex-col bg-cream text-taupe">
       <Navbar />
 
-      <main className="flex-1 max-w-xl mx-auto px-4 py-16 sm:py-24 w-full text-center">
+      <main className="flex-1 max-w-xl mx-auto px-4 py-10 sm:py-20 w-full text-center">
         <div className="w-14 h-14 rounded-full bg-sand/40 border border-sand/70 flex items-center justify-center mx-auto mb-6">
           <Package className="w-7 h-7 text-gold" />
         </div>
@@ -63,7 +63,7 @@ export default function TrackOrderPage() {
                   setError("");
                 }}
                 placeholder="e.g. ALS7A8B9C or 7A8B9C"
-                className="w-full bg-beige border border-sand rounded-md px-4 py-3.5 text-sm text-taupe focus:outline-none focus:border-gold transition-colors font-sans pl-11"
+                className="w-full bg-beige border border-sand rounded-md px-4 py-3 text-base sm:text-sm text-taupe focus:outline-none focus:border-gold transition-colors font-sans pl-11 min-h-[48px]"
               />
               <Search className="w-5 h-5 text-taupe/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
             </div>
@@ -72,7 +72,7 @@ export default function TrackOrderPage() {
 
           <button
             type="submit"
-            className="w-full bg-taupe text-cream py-3.5 px-6 rounded-md font-medium text-sm hover:bg-gold transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full bg-taupe text-cream py-3.5 px-6 rounded-md font-medium text-sm hover:bg-gold transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
           >
             <span>Track Order</span>
             <ArrowRight className="w-4 h-4" />

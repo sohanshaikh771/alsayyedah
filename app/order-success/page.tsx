@@ -18,9 +18,16 @@ export default function OrderSuccessPage() {
         </div>
 
         {/* Order Sent to WhatsApp! (serif 4xl) */}
-        <h1 className="font-serif text-4xl sm:text-5xl text-taupe font-medium mb-4">
+        <h1 className="font-serif text-4xl sm:text-5xl text-taupe font-medium mb-2">
           Order Sent to WhatsApp!
         </h1>
+
+        <p className="font-amiri text-3xl text-gold/80 text-center mt-2" dir="rtl">
+          شكراً جزيلاً
+        </p>
+        <p className="text-center text-taupe/70 text-sm mt-1 mb-6">
+          (Thank you so much)
+        </p>
 
         {/* Subtext info */}
         <div className="space-y-2 max-w-md mx-auto mb-10 text-taupe/80 text-base leading-relaxed">

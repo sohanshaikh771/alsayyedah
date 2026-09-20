@@ -107,8 +107,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Product Details Below Image */}
-        <div className="mt-3.5 space-y-1 text-left">
-          <h3 className="font-serif text-lg font-medium text-taupe tracking-wide group-hover:text-gold transition-colors duration-300 line-clamp-1">
+        <div className="mt-3 space-y-1 text-left">
+          <h3 className="font-serif text-base md:text-lg font-medium text-taupe tracking-wide group-hover:text-gold transition-colors duration-300 line-clamp-1">
             {product.name}
           </h3>
 
@@ -116,9 +116,9 @@ export default function ProductCard({ product }: ProductCardProps) {
             {product.fabric}
           </p>
 
-          {/* Price Row */}
-          <div className="flex items-center gap-2 pt-0.5">
-            <span className="text-base font-bold text-taupe transition-colors duration-300">
+          {/* Price Row (wraps properly on small screens) */}
+          <div className="flex items-center flex-wrap gap-1.5 sm:gap-2 pt-0.5">
+            <span className="text-sm sm:text-base font-bold text-taupe transition-colors duration-300">
               ₹{product.price.toLocaleString("en-IN")}
             </span>
 
@@ -129,7 +129,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             )}
 
             {hasDiscount && (
-              <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/60 transition-colors duration-300">
+              <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/60 transition-colors duration-300">
                 {discountPercent}% off
               </span>
             )}

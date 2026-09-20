@@ -481,22 +481,22 @@ function AccountContent() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* ================= LEFT SIDEBAR (lg:col-span-1) ================= */}
           <aside className="lg:col-span-1">
-            <div className="bg-cream border border-sand rounded-xl p-6 sticky top-24">
+            <div className="bg-cream border border-sand rounded-xl p-4 sm:p-6 lg:sticky lg:top-24">
               {/* User Card */}
-              <div className="flex items-center gap-4 pb-6 border-b border-sand/70">
+              <div className="flex items-center gap-3 sm:gap-4 pb-4 sm:pb-6 border-b border-sand/70">
                 {user.photoURL ? (
                   <img
                     src={user.photoURL}
                     alt={user.displayName || "User avatar"}
-                    className="w-16 h-16 rounded-full object-cover border border-sand shrink-0 shadow-xs"
+                    className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border border-sand shrink-0 shadow-xs"
                   />
                 ) : (
-                  <div className="w-16 h-16 rounded-full bg-taupe text-cream flex items-center justify-center text-2xl font-serif font-medium shrink-0 shadow-xs">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-taupe text-cream flex items-center justify-center text-xl sm:text-2xl font-serif font-medium shrink-0 shadow-xs">
                     {userInitial}
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <h2 className="font-serif text-lg font-medium text-taupe truncate">
+                  <h2 className="font-serif text-base sm:text-lg font-medium text-taupe truncate">
                     {user.displayName || "Valued Customer"}
                   </h2>
                   <p className="text-xs text-taupe/70 truncate mt-0.5" title={user.email || ""}>
@@ -505,15 +505,15 @@ function AccountContent() {
                 </div>
               </div>
 
-              {/* Vertical Tabs */}
-              <nav className="space-y-1 mt-6">
+              {/* Responsive Tabs: Horizontal scrollable pills on mobile, vertical on desktop */}
+              <nav className="flex lg:flex-col items-center lg:items-stretch gap-2 lg:gap-1 mt-4 sm:mt-6 overflow-x-auto lg:overflow-visible pb-1 lg:pb-0 scrollbar-none">
                 {/* Tab: Profile */}
                 <Link
                   href="/account"
-                  className={`flex items-center gap-3 px-4 py-3 text-sm transition-colors duration-150 ${
+                  className={`flex items-center gap-2 sm:gap-3 px-3.5 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm whitespace-nowrap transition-colors duration-150 rounded-full lg:rounded-md flex-shrink-0 min-h-[40px] ${
                     activeTab === "profile"
-                      ? "bg-beige text-taupe font-medium rounded-md"
-                      : "text-taupe/70 hover:bg-beige/50 rounded-md"
+                      ? "bg-taupe text-cream lg:bg-beige lg:text-taupe font-medium shadow-xs"
+                      : "text-taupe/70 bg-sand/30 lg:bg-transparent hover:bg-beige/50"
                   }`}
                 >
                   <UserIcon className="w-4 h-4 shrink-0" />
@@ -523,16 +523,16 @@ function AccountContent() {
                 {/* Tab: Orders */}
                 <Link
                   href="/account?tab=orders"
-                  className={`flex items-center gap-3 px-4 py-3 text-sm transition-colors duration-150 ${
+                  className={`flex items-center gap-2 sm:gap-3 px-3.5 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm whitespace-nowrap transition-colors duration-150 rounded-full lg:rounded-md flex-shrink-0 min-h-[40px] ${
                     activeTab === "orders"
-                      ? "bg-beige text-taupe font-medium rounded-md"
-                      : "text-taupe/70 hover:bg-beige/50 rounded-md"
+                      ? "bg-taupe text-cream lg:bg-beige lg:text-taupe font-medium shadow-xs"
+                      : "text-taupe/70 bg-sand/30 lg:bg-transparent hover:bg-beige/50"
                   }`}
                 >
                   <Package className="w-4 h-4 shrink-0" />
-                  <span className="flex-1">My Orders</span>
+                  <span>My Orders</span>
                   {orders.length > 0 && (
-                    <span className="text-xs bg-taupe/10 text-taupe px-2 py-0.5 rounded-full font-medium">
+                    <span className="text-[10px] sm:text-xs bg-cream/20 lg:bg-taupe/10 text-current px-1.5 py-0.5 rounded-full font-medium">
                       {orders.length}
                     </span>
                   )}
@@ -541,16 +541,16 @@ function AccountContent() {
                 {/* Tab: Addresses */}
                 <Link
                   href="/account?tab=addresses"
-                  className={`flex items-center gap-3 px-4 py-3 text-sm transition-colors duration-150 ${
+                  className={`flex items-center gap-2 sm:gap-3 px-3.5 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm whitespace-nowrap transition-colors duration-150 rounded-full lg:rounded-md flex-shrink-0 min-h-[40px] ${
                     activeTab === "addresses"
-                      ? "bg-beige text-taupe font-medium rounded-md"
-                      : "text-taupe/70 hover:bg-beige/50 rounded-md"
+                      ? "bg-taupe text-cream lg:bg-beige lg:text-taupe font-medium shadow-xs"
+                      : "text-taupe/70 bg-sand/30 lg:bg-transparent hover:bg-beige/50"
                   }`}
                 >
                   <MapPin className="w-4 h-4 shrink-0" />
-                  <span className="flex-1">Saved Addresses</span>
+                  <span>Saved Addresses</span>
                   {addresses.length > 0 && (
-                    <span className="text-xs bg-taupe/10 text-taupe px-2 py-0.5 rounded-full font-medium">
+                    <span className="text-[10px] sm:text-xs bg-cream/20 lg:bg-taupe/10 text-current px-1.5 py-0.5 rounded-full font-medium">
                       {addresses.length}
                     </span>
                   )}
@@ -560,7 +560,7 @@ function AccountContent() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-rose-700/80 hover:text-rose-900 hover:bg-rose-50/50 rounded-md transition-colors duration-150 text-left cursor-pointer"
+                  className="flex items-center gap-2 sm:gap-3 px-3.5 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-rose-700/80 hover:text-rose-900 bg-rose-50/50 hover:bg-rose-100/50 rounded-full lg:rounded-md transition-colors duration-150 text-left cursor-pointer whitespace-nowrap flex-shrink-0 min-h-[40px]"
                 >
                   <LogOut className="w-4 h-4 shrink-0" />
                   <span>Logout</span>
@@ -578,27 +578,27 @@ function AccountContent() {
                   My Profile
                 </h1>
 
-                <div className="bg-cream border border-sand rounded-xl p-6 sm:p-8 shadow-xs">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                <div className="bg-cream border border-sand rounded-xl p-5 sm:p-8 shadow-xs">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                     {user.photoURL ? (
                       <img
                         src={user.photoURL}
                         alt={user.displayName || "User avatar"}
-                        className="w-20 h-20 rounded-full object-cover border border-sand shrink-0 shadow-sm"
+                        className="w-14 h-14 sm:w-20 sm:h-20 rounded-full object-cover border border-sand shrink-0 shadow-sm"
                       />
                     ) : (
-                      <div className="w-20 h-20 rounded-full bg-taupe text-cream flex items-center justify-center text-3xl font-serif font-medium shrink-0 shadow-sm">
+                      <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-taupe text-cream flex items-center justify-center text-2xl sm:text-3xl font-serif font-medium shrink-0 shadow-sm">
                         {userInitial}
                       </div>
                     )}
 
-                    <div className="space-y-1.5 flex-1">
-                      <h2 className="font-serif text-2xl font-medium text-taupe">
+                    <div className="space-y-1 sm:space-y-1.5 flex-1 min-w-0">
+                      <h2 className="font-serif text-xl sm:text-2xl font-medium text-taupe truncate">
                         {user.displayName || "Valued Customer"}
                       </h2>
-                      <p className="text-sm text-taupe/80">{user.email}</p>
-                      <div className="pt-2">
-                        <span className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-sand rounded-full text-xs font-medium text-taupe shadow-2xs">
+                      <p className="text-xs sm:text-sm text-taupe/80 truncate">{user.email}</p>
+                      <div className="pt-1.5">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-sand rounded-full text-xs font-medium text-taupe shadow-2xs">
                           <FcGoogle className="w-3.5 h-3.5 shrink-0" />
                           <span>Signed in with Google</span>
                         </span>

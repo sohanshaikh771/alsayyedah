@@ -2,7 +2,7 @@ export interface Product {
   id: string;
   slug: string;
   name: string;
-  category: "abaya" | "burkha" | "niqab" | "hijab";
+  category: string;
   price: number;
   mrp?: number;
   fabric: string;

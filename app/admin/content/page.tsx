@@ -9,6 +9,7 @@ import {
 } from "@/lib/content-firestore";
 import { Loader2, Check, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
+import ImageUploader from "@/components/ImageUploader";
 
 export default function AdminContentPage() {
   const [content, setContent] = useState<SiteContent>(defaultContent);
@@ -272,6 +273,32 @@ export default function AdminContentPage() {
                 className="w-full bg-cream border border-sand rounded-md px-3 py-2 text-taupe focus:border-gold focus:outline-none transition-colors font-serif italic"
                 placeholder="Your Modest Identity"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-taupe mb-1">
+                Brand Story Images
+              </label>
+              <ImageUploader
+                value={
+                  content.storyImages && content.storyImages.length > 0
+                    ? content.storyImages
+                    : content.storyImage
+                    ? [content.storyImage]
+                    : []
+                }
+                onChange={(urls) =>
+                  setContent({
+                    ...content,
+                    storyImages: urls,
+                    storyImage: urls[0] || "",
+                  })
+                }
+                maxImages={5}
+              />
+              <p className="text-xs text-taupe/60 mt-1.5 font-sans">
+                Upload up to 5 images. They will auto-slide in the brand story section. Recommended: 800x1000px portrait.
+              </p>
             </div>
           </div>
         </section>

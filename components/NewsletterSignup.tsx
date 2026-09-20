@@ -50,7 +50,7 @@ export default function NewsletterSignup() {
 
         {/* 4. Form */}
         <form onSubmit={handleSubmit} className="mt-6 max-w-md mx-auto">
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="email"
               placeholder="Enter your email"
@@ -59,13 +59,13 @@ export default function NewsletterSignup() {
                 setEmail(e.target.value);
                 if (message) setMessage("");
               }}
-              className="flex-1 bg-cream border border-sand rounded-md px-4 py-3 text-taupe placeholder:text-taupe/40 focus:border-gold focus:outline-none text-sm font-sans transition-colors"
+              className="w-full sm:flex-1 bg-cream border border-sand rounded-md px-4 py-3 text-taupe placeholder:text-taupe/40 focus:border-gold focus:outline-none text-sm font-sans transition-colors min-h-[44px]"
               required
             />
             <button
               type="submit"
               disabled={loading || !email.trim()}
-              className="bg-taupe text-cream px-6 py-3 rounded-md hover:bg-gold transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-2xs flex-shrink-0"
+              className="w-full sm:w-auto bg-taupe text-cream px-6 py-3 rounded-md hover:bg-gold transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-xs flex-shrink-0 min-h-[44px] flex items-center justify-center"
             >
               {loading ? "Joining..." : "Subscribe"}
             </button>

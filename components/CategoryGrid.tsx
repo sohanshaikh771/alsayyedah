@@ -22,14 +22,14 @@ export default function CategoryGrid() {
 
   if (loading) {
     return (
-      <section className="bg-cream py-20">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
+      <section className="bg-cream py-10 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8 sm:mb-12">
             <div className="h-3 w-32 bg-sand rounded shimmer mx-auto" />
             <div className="h-8 w-64 bg-sand rounded shimmer mx-auto mt-3" />
-            <div className="h-4 w-96 bg-sand rounded shimmer mx-auto mt-3" />
+            <div className="h-4 w-96 max-w-full bg-sand rounded shimmer mx-auto mt-3" />
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
@@ -45,21 +45,21 @@ export default function CategoryGrid() {
   if (categories.length === 0) return null;
 
   return (
-    <section className="bg-cream py-20">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <p className="text-xs tracking-[0.3em] text-gold uppercase">
+    <section className="bg-cream py-10 sm:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8 sm:mb-12">
+          <p className="text-xs tracking-[0.3em] text-gold uppercase font-semibold">
             CATEGORIES
           </p>
-          <h2 className="font-serif text-4xl text-taupe mt-2">
+          <h2 className="font-serif text-3xl sm:text-4xl text-taupe mt-2">
             Shop by Category
           </h2>
-          <p className="text-taupe/60 mt-3 max-w-lg mx-auto">
+          <p className="text-taupe/60 text-sm sm:text-base mt-2 max-w-lg mx-auto">
             Handcrafted modest wear for every occasion
           </p>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {categories.map((cat: any, i: number) => (
             <motion.div

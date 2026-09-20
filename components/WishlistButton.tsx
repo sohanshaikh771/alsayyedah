@@ -85,7 +85,7 @@ export default function WishlistButton({
       type="button"
       whileTap={{ scale: 0.85 }}
       onClick={handleToggle}
-      className={`p-2 rounded-full bg-cream/90 backdrop-blur-xs hover:bg-cream shadow-xs transition-colors cursor-pointer flex items-center justify-center ${className}`}
+      className={`w-10 h-10 min-w-[40px] min-h-[40px] p-2 rounded-full bg-cream/90 backdrop-blur-xs hover:bg-cream shadow-xs transition-colors cursor-pointer flex items-center justify-center ${className}`}
       aria-label={isSaved ? "Remove from Wishlist" : "Save to Wishlist"}
       title={isSaved ? "Remove from Wishlist" : "Save to Wishlist"}
     >

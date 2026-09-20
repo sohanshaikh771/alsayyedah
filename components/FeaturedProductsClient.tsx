@@ -57,7 +57,7 @@ export default function FeaturedProductsClient({
   }, [initialProducts]);
 
   return (
-    <section className="relative overflow-hidden isolate bg-beige py-20 border-t border-sand/40">
+    <section className="relative overflow-hidden isolate bg-beige py-10 sm:py-16 border-t border-sand/40">
       {/* Subtle decorative background circle behind grid */}
       <div
         className="absolute top-20 right-0 -z-10 w-96 h-96 rounded-full bg-gold/5 blur-3xl pointer-events-none"
@@ -66,7 +66,7 @@ export default function FeaturedProductsClient({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-12">
+        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
           <motion.span
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -90,7 +90,7 @@ export default function FeaturedProductsClient({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-taupe/60 text-center mt-3 max-w-lg mx-auto font-sans text-sm sm:text-base leading-relaxed"
+            className="text-taupe/60 text-center mt-2 max-w-lg mx-auto font-sans text-sm sm:text-base leading-relaxed"
           >
             Our best sellers loved by customers
           </motion.p>
@@ -98,7 +98,7 @@ export default function FeaturedProductsClient({
 
         {/* Product Grid or Empty State */}
         {loading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
             {Array.from({ length: 4 }).map((_, idx) => (
               <ProductCardSkeleton key={idx} />
             ))}
@@ -110,7 +110,7 @@ export default function FeaturedProductsClient({
               initial="initial"
               whileInView="animate"
               viewport={{ once: true, amount: 0.15 }}
-              className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+              className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6"
             >
               {products.map((product) => (
                 <motion.div key={product.id} variants={fadeInUp}>
@@ -125,11 +125,11 @@ export default function FeaturedProductsClient({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="mt-12 flex justify-center"
+              className="mt-10 sm:mt-12 flex justify-center"
             >
               <Link
                 href="/shop"
-                className="border-2 border-taupe text-taupe px-8 py-3 rounded-md hover:bg-taupe hover:text-cream transition-all duration-300 font-medium tracking-wide text-sm font-sans inline-flex items-center justify-center max-w-xs shadow-sm hover:shadow-md"
+                className="border-2 border-taupe text-taupe px-8 py-3.5 min-h-[44px] rounded-md hover:bg-taupe hover:text-cream transition-all duration-300 font-medium tracking-wide text-sm font-sans inline-flex items-center justify-center w-full sm:w-auto max-w-xs shadow-sm hover:shadow-md"
               >
                 View All Products →
               </Link>

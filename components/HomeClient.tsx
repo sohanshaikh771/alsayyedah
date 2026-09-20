@@ -63,14 +63,14 @@ export default function HomeClient({
             />
           </div>
 
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-24">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
               {/* LEFT COLUMN (content, vertically centered) */}
               <motion.div
                 variants={staggerContainer}
                 initial="initial"
                 animate="animate"
-                className="flex flex-col justify-center items-start text-left space-y-6"
+                className="flex flex-col justify-center items-start text-left space-y-5 sm:space-y-6 w-full"
               >
                 {/* Small label: "MODEST FASHION" (gold, tracking-[0.3em], text-xs, uppercase) */}
                 <motion.div variants={fadeInUp}>
@@ -79,10 +79,10 @@ export default function HomeClient({
                   </span>
                 </motion.div>
 
-                {/* Big serif heading (5xl on mobile, 7xl on desktop): "Your Modest Identity" with line break */}
+                {/* Big serif heading: reduced on mobile to text-4xl / sm:text-5xl / lg:text-7xl */}
                 <motion.h1
                   variants={fadeInUp}
-                  className="font-serif text-5xl sm:text-6xl lg:text-7xl text-taupe leading-[1.08] tracking-tight whitespace-pre-line"
+                  className="font-serif text-4xl sm:text-5xl lg:text-7xl text-taupe leading-[1.1] tracking-tight whitespace-pre-line break-words w-full"
                 >
                   {(content.heroHeading || "Your Modest\nIdentity")
                     .split("\n")
@@ -97,19 +97,19 @@ export default function HomeClient({
                 {/* Subtext (taupe/70, max-w-md, leading-relaxed) */}
                 <motion.p
                   variants={fadeInUp}
-                  className="text-base sm:text-lg text-taupe/70 max-w-md font-sans leading-relaxed"
+                  className="text-sm sm:text-base lg:text-lg text-taupe/70 max-w-md font-sans leading-relaxed"
                 >
                   {content.heroSubtext}
                 </motion.p>
 
-                {/* Buttons row (flex gap-3 flex-wrap) */}
+                {/* Buttons row: stacked full-width on mobile, side-by-side on sm+ */}
                 <motion.div
                   variants={fadeInUp}
-                  className="pt-2 flex flex-wrap items-center gap-3 w-full sm:w-auto"
+                  className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto"
                 >
                   <Link
                     href="/shop"
-                    className="bg-taupe text-cream px-8 py-4 rounded-md hover:bg-gold transition-all duration-300 shadow-md hover:shadow-lg font-medium tracking-wide text-center w-full sm:w-auto inline-flex items-center justify-center select-none"
+                    className="bg-taupe text-cream px-8 py-3.5 min-h-[44px] rounded-md hover:bg-gold transition-all duration-300 shadow-md hover:shadow-lg font-medium tracking-wide text-center w-full sm:w-auto inline-flex items-center justify-center select-none text-sm sm:text-base"
                   >
                     Shop Now
                   </Link>
@@ -118,21 +118,21 @@ export default function HomeClient({
                     href={BRAND.whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="border-2 border-taupe text-taupe px-8 py-4 rounded-md hover:bg-taupe hover:text-cream transition-all duration-300 flex items-center justify-center gap-2 font-medium tracking-wide text-center w-full sm:w-auto select-none group"
+                    className="border-2 border-taupe text-taupe px-8 py-3.5 min-h-[44px] rounded-md hover:bg-taupe hover:text-cream transition-all duration-300 flex items-center justify-center gap-2 font-medium tracking-wide text-center w-full sm:w-auto select-none group text-sm sm:text-base"
                   >
-                    <FaWhatsapp className="w-5 h-5 text-[#25D366] group-hover:text-cream transition-colors" />
+                    <FaWhatsapp className="w-5 h-5 text-[#25D366] group-hover:text-cream transition-colors flex-shrink-0" />
                     <span>Order on WhatsApp</span>
                   </a>
                 </motion.div>
 
-                {/* Trust badges row below the buttons (mt-8, flex gap-6, text-xs taupe/60) */}
+                {/* Trust badges row below the buttons: wraps properly on mobile */}
                 <motion.div
                   variants={fadeInUp}
-                  className="pt-4 flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-taupe/70 font-sans"
+                  className="pt-3 flex flex-wrap items-center gap-3 sm:gap-6 text-xs text-taupe/75 font-sans"
                 >
                   <div className="flex items-center gap-1.5">
                     <span className="text-gold font-bold text-sm">✓</span>
-                    <span>Free Shipping above ₹1999</span>
+                    <span>Free Shipping &gt; ₹1999</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-gold font-bold text-sm">✓</span>
@@ -140,7 +140,7 @@ export default function HomeClient({
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-gold font-bold text-sm">✓</span>
-                    <span>Premium Quality</span>
+                    <span>Saudi & Korean Silks</span>
                   </div>
                 </motion.div>
               </motion.div>
@@ -209,9 +209,9 @@ export default function HomeClient({
 
 
         {/* 4. BRAND STORY SECTION */}
-        <section className="w-full bg-cream border-y border-sand/40 py-20 overflow-hidden">
+        <section className="w-full bg-cream border-y border-sand/40 py-10 sm:py-16 lg:py-20 overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
               {/* LEFT COLUMN (visual) */}
               <motion.div
                 variants={slideInLeft}
@@ -220,52 +220,63 @@ export default function HomeClient({
                 viewport={{ once: true, amount: 0.25 }}
                 className="w-full flex justify-center"
               >
-                <motion.div
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                  className="relative w-full max-w-lg aspect-square sm:aspect-[4/5] rounded-2xl overflow-hidden border border-sand/50 shadow-xl bg-gradient-to-br from-sand via-beige to-sand/90 p-8 flex flex-col justify-between select-none"
-                >
-                  {/* Large decorative serif letter "A" centered watermark */}
-                  <span className="absolute inset-0 flex items-center justify-center font-serif text-[12rem] font-bold text-taupe/10 select-none pointer-events-none">
-                    A
-                  </span>
-
-                  {/* Thin gold circle outline (absolute top-8 right-8, w-32 h-32) */}
-                  <div className="absolute top-8 right-8 w-32 h-32 border border-gold/30 rounded-full pointer-events-none" />
-
-                  {/* Small dots pattern (CSS radial gradient) at bottom-left */}
-                  <div
-                    className="absolute bottom-6 left-6 w-36 h-36 opacity-25 pointer-events-none"
-                    style={{
-                      backgroundImage: "radial-gradient(#6B5B4E 1.2px, transparent 1.2px)",
-                      backgroundSize: "14px 14px",
-                    }}
-                  />
-
-                  {/* Inner luxury seal & frame */}
-                  <div className="relative z-10 w-full h-full border border-gold/25 rounded-xl p-6 sm:p-8 flex flex-col justify-between backdrop-blur-[1px] bg-cream/15">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] tracking-[0.3em] uppercase text-taupe/60 font-semibold font-sans">
-                        Artisan Islamic Wear
-                      </span>
-                      <Sparkles className="w-4 h-4 text-gold" />
-                    </div>
-
-                    <div className="my-auto text-center space-y-2 py-8">
-                      <span className="font-serif text-3xl sm:text-4xl text-taupe/85 tracking-widest uppercase block font-semibold">
-                        ALSAYYEDAH
-                      </span>
-                      <p className="font-serif text-sm italic text-taupe/60">
-                        {content.storyTagline || "Your Modest Identity"}
-                      </p>
-                    </div>
-
-                    <div className="pt-4 border-t border-gold/20 flex items-center justify-between text-[11px] text-taupe/60 font-sans">
-                      <span>Heritage & Modesty</span>
-                      <span className="text-gold font-medium">Delivered Across India</span>
-                    </div>
+                {content.storyImage ? (
+                  <div className="w-full max-w-lg aspect-square sm:aspect-[4/5] rounded-2xl overflow-hidden border border-sand/50 shadow-xl">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={content.storyImage}
+                      alt="ALSayyedah Craftsmanship"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                </motion.div>
+                ) : (
+                  <motion.div
+                    animate={{ y: [0, -8, 0] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                    className="relative w-full max-w-lg aspect-square sm:aspect-[4/5] rounded-2xl overflow-hidden border border-sand/50 shadow-xl bg-gradient-to-br from-sand via-beige to-sand/90 p-8 flex flex-col justify-between select-none"
+                  >
+                    {/* Large decorative serif letter "A" centered watermark */}
+                    <span className="absolute inset-0 flex items-center justify-center font-serif text-[12rem] font-bold text-taupe/10 select-none pointer-events-none">
+                      A
+                    </span>
+
+                    {/* Thin gold circle outline (absolute top-8 right-8, w-32 h-32) */}
+                    <div className="absolute top-8 right-8 w-32 h-32 border border-gold/30 rounded-full pointer-events-none" />
+
+                    {/* Small dots pattern (CSS radial gradient) at bottom-left */}
+                    <div
+                      className="absolute bottom-6 left-6 w-36 h-36 opacity-25 pointer-events-none"
+                      style={{
+                        backgroundImage: "radial-gradient(#6B5B4E 1.2px, transparent 1.2px)",
+                        backgroundSize: "14px 14px",
+                      }}
+                    />
+
+                    {/* Inner luxury seal & frame */}
+                    <div className="relative z-10 w-full h-full border border-gold/25 rounded-xl p-6 sm:p-8 flex flex-col justify-between backdrop-blur-[1px] bg-cream/15">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] tracking-[0.3em] uppercase text-taupe/60 font-semibold font-sans">
+                          Artisan Islamic Wear
+                        </span>
+                        <Sparkles className="w-4 h-4 text-gold" />
+                      </div>
+
+                      <div className="my-auto text-center space-y-2 py-8">
+                        <span className="font-serif text-3xl sm:text-4xl text-taupe/85 tracking-widest uppercase block font-semibold">
+                          ALSAYYEDAH
+                        </span>
+                        <p className="font-serif text-sm italic text-taupe/60">
+                          {content.storyTagline || "Your Modest Identity"}
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-gold/20 flex items-center justify-between text-[11px] text-taupe/60 font-sans">
+                        <span>Heritage & Modesty</span>
+                        <span className="text-gold font-medium">Delivered Across India</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
               </motion.div>
 
               {/* RIGHT COLUMN (content) */}

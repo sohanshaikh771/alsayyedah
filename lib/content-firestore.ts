@@ -13,6 +13,8 @@ export type SiteContent = {
   storyParagraph1: string;
   storyParagraph2: string;
   storyTagline: string;
+  storyImage?: string;
+  storyImages?: string[];
 };
 
 export const defaultContent: SiteContent = {
@@ -26,6 +28,8 @@ export const defaultContent: SiteContent = {
   storyParagraph1: "At ALSayyedah, modesty and elegance exist in graceful harmony, inspired by timeless Islamic heritage, each garment is designed to celebrate your personal expression of faith with quiet luxury and uncompromising dignity.",
   storyParagraph2: "From hand-selected breathable Saudi Crepe and Korean Nida fabrics to impeccably tailored cuts, we pour artisan craftsmanship into every stitch. Designed for comfort and lasting grace, delivered straight to your doorstep across India.",
   storyTagline: "Your Modest Identity",
+  storyImage: "",
+  storyImages: [],
 };
 
 export async function getSiteContent(): Promise<SiteContent> {

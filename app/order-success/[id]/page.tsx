@@ -137,6 +137,13 @@ export default function OrderSuccessPage() {
           Thank you, <span className="text-gold font-semibold">{customerName}</span>!
         </p>
 
+        <p className="font-amiri text-3xl text-gold/80 text-center mt-2" dir="rtl">
+          شكراً جزيلاً
+        </p>
+        <p className="text-center text-taupe/70 text-sm mt-1 mb-6">
+          (Thank you so much)
+        </p>
+
         {/* Instructions */}
         <p className="text-sm sm:text-base text-taupe/80 max-w-md mx-auto mb-8 leading-relaxed">
           Please send us your order on WhatsApp so we can confirm it quickly.

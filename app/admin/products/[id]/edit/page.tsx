@@ -30,7 +30,7 @@ export default function EditProductPage() {
           setProduct({
             name: data.name || "",
             slug: data.slug || "",
-            category: data.category || "abaya",
+            category: data.category || "",
             price: data.price ?? "",
             mrp: data.mrp ?? "",
             fabric: data.fabric || "",

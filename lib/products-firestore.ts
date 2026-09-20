@@ -13,7 +13,7 @@ export type Product = {
   id: string;
   name: string;
   slug: string;
-  category: "abaya" | "burkha" | "niqab" | "hijab";
+  category: string;
   price: number;
   mrp?: number;
   fabric: string;

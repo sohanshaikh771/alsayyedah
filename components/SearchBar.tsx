@@ -107,7 +107,7 @@ export default function SearchBar() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="p-2 hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 focus:outline-none cursor-pointer flex items-center justify-center group"
+        className="p-2 min-w-[40px] min-h-[40px] hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 focus:outline-none cursor-pointer flex items-center justify-center group"
         aria-label="Search products"
         title="Search"
       >
@@ -137,7 +137,7 @@ export default function SearchBar() {
               className="relative z-10 w-full max-w-lg mt-16 sm:mt-20 bg-cream rounded-lg border border-sand shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
             >
               {/* Top search input bar */}
-              <div className="flex items-center gap-2 p-4 border-b border-sand bg-cream">
+              <div className="flex items-center gap-2 p-3 sm:p-4 border-b border-sand bg-cream">
                 <Search className="w-5 h-5 text-taupe/50 flex-shrink-0" />
                 <input
                   ref={inputRef}
@@ -146,7 +146,7 @@ export default function SearchBar() {
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleKeyDownInput}
                   placeholder="Start typing to search..."
-                  className="flex-1 bg-transparent outline-none text-taupe placeholder:text-taupe/40 font-sans text-sm sm:text-base"
+                  className="flex-1 bg-transparent outline-none text-taupe placeholder:text-taupe/40 font-sans text-base sm:text-sm py-2"
                 />
                 {loading && (
                   <Loader2 className="w-4 h-4 animate-spin text-gold flex-shrink-0 mr-1" />
@@ -154,7 +154,7 @@ export default function SearchBar() {
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="p-1 rounded text-taupe/60 hover:text-taupe hover:bg-beige transition-colors cursor-pointer"
+                  className="p-2 min-w-[36px] min-h-[36px] rounded-full text-taupe/60 hover:text-taupe hover:bg-beige transition-colors cursor-pointer flex items-center justify-center"
                   aria-label="Close search"
                 >
                   <X className="w-5 h-5" />
