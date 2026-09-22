@@ -6,6 +6,7 @@ export type SiteContent = {
   heroHeading: string;
   heroSubtext: string;
   heroBgImage?: string;
+  heroImages?: string[];
   categoriesTitle: string;
   featuredTitle: string;
   storyLabel: string;
@@ -21,6 +22,7 @@ export const defaultContent: SiteContent = {
   heroLabel: "MODEST FASHION",
   heroHeading: "Your Modest\nIdentity",
   heroSubtext: "Premium Burkha, Abaya, Niqab & Hijab — handcrafted with love, delivered across India.",
+  heroImages: [],
   categoriesTitle: "Shop by Category",
   featuredTitle: "Featured Products",
   storyLabel: "OUR STORY",

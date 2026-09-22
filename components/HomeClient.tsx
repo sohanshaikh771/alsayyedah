@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Sparkles, Heart, Truck } from "lucide-react";
+import { Sparkles, Heart, Truck, Check, MessageCircle } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
@@ -10,6 +10,8 @@ import Footer from "@/components/Footer";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import FeaturedProductsClient from "@/components/FeaturedProductsClient";
 import CategoryGrid from "@/components/CategoryGrid";
+import BrandStorySlider from "@/components/BrandStorySlider";
+import HeroImageSlider from "@/components/HeroImageSlider";
 import { Product } from "@/lib/products-firestore";
 import { SiteContent, defaultContent } from "@/lib/content-firestore";
 import { BRAND } from "@/lib/constants";
@@ -24,178 +26,136 @@ export default function HomeClient({
   initialProducts = [],
   content = defaultContent,
 }: HomeClientProps) {
-
   return (
     <div className="min-h-screen flex flex-col bg-cream text-taupe">
       <Navbar />
 
       <main className="flex-1">
-        {/* 1. HERO SECTION */}
-        <section className="relative w-full bg-gradient-to-b from-cream via-beige/50 to-beige border-b border-sand/40 overflow-hidden">
-          {/* Subtle floating background blobs */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <motion.div
-              animate={{
-                x: [0, 25, -15, 0],
-                y: [0, -20, 15, 0],
-                scale: [1, 1.08, 0.95, 1],
-              }}
-              transition={{
-                duration: 12,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-gradient-to-br from-gold/15 to-sand/20 blur-3xl opacity-60"
-            />
-            <motion.div
-              animate={{
-                x: [0, -20, 20, 0],
-                y: [0, 25, -15, 0],
-                scale: [1, 0.95, 1.08, 1],
-              }}
-              transition={{
-                duration: 15,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 1,
-              }}
-              className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-gradient-to-tl from-sand/30 to-gold/10 blur-3xl opacity-50"
-            />
-          </div>
+        {/* 1. HERO SECTION (Mobile Full-Width vs Desktop Two-Column) */}
+        <section className="relative bg-gradient-to-b from-cream to-beige border-b border-sand/40">
 
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-24">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-              {/* LEFT COLUMN (content, vertically centered) */}
-              <motion.div
-                variants={staggerContainer}
-                initial="initial"
-                animate="animate"
-                className="flex flex-col justify-center items-start text-left space-y-5 sm:space-y-6 w-full"
-              >
-                {/* Small label: "MODEST FASHION" (gold, tracking-[0.3em], text-xs, uppercase) */}
-                <motion.div variants={fadeInUp}>
-                  <span className="inline-block text-xs font-semibold tracking-[0.3em] text-gold uppercase font-sans">
-                    {content.heroLabel || "MODEST FASHION"}
-                  </span>
-                </motion.div>
+          {/* ============ MOBILE VERSION (below lg) ============ */}
+          <div className="lg:hidden relative min-h-[80vh] flex items-center overflow-hidden">
+            {/* Background image */}
+            {content.heroImages && content.heroImages.length > 0 ? (
+              <div className="absolute inset-0 z-0">
+                <HeroImageSlider images={content.heroImages} fillMode />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/20" />
+              </div>
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-beige via-cream to-sand" />
+            )}
 
-                {/* Big serif heading: reduced on mobile to text-4xl / sm:text-5xl / lg:text-7xl */}
-                <motion.h1
-                  variants={fadeInUp}
-                  className="font-serif text-4xl sm:text-5xl lg:text-7xl text-taupe leading-[1.1] tracking-tight whitespace-pre-line break-words w-full"
-                >
-                  {(content.heroHeading || "Your Modest\nIdentity")
-                    .split("\n")
-                    .map((line, idx) => (
-                      <React.Fragment key={idx}>
-                        {idx > 0 && <br />}
-                        {line}
-                      </React.Fragment>
-                    ))}
-                </motion.h1>
-
-                {/* Subtext (taupe/70, max-w-md, leading-relaxed) */}
-                <motion.p
-                  variants={fadeInUp}
-                  className="text-sm sm:text-base lg:text-lg text-taupe/70 max-w-md font-sans leading-relaxed"
-                >
+            {/* Text overlay */}
+            <div className="relative z-10 px-6 py-16 w-full">
+              <div className="max-w-md">
+                <p className="text-xs tracking-[0.3em] text-gold uppercase mb-4 font-sans font-semibold">
+                  {content.heroLabel || "MODEST FASHION"}
+                </p>
+                <h1 className="font-serif text-4xl leading-tight whitespace-pre-line text-cream drop-shadow-lg">
+                  {content.heroHeading || "Your Modest\nIdentity"}
+                </h1>
+                <p className="mt-4 text-cream/90 text-base leading-relaxed font-sans">
                   {content.heroSubtext}
-                </motion.p>
-
-                {/* Buttons row: stacked full-width on mobile, side-by-side on sm+ */}
-                <motion.div
-                  variants={fadeInUp}
-                  className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto"
-                >
+                </p>
+                <div className="mt-6 flex flex-col gap-3">
                   <Link
                     href="/shop"
-                    className="bg-taupe text-cream px-8 py-3.5 min-h-[44px] rounded-md hover:bg-gold transition-all duration-300 shadow-md hover:shadow-lg font-medium tracking-wide text-center w-full sm:w-auto inline-flex items-center justify-center select-none text-sm sm:text-base"
+                    className="bg-cream text-taupe text-center px-6 py-3 rounded-md font-medium shadow-md hover:bg-gold hover:text-cream transition-all duration-300"
                   >
                     Shop Now
                   </Link>
-
                   <a
                     href={BRAND.whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="border-2 border-taupe text-taupe px-8 py-3.5 min-h-[44px] rounded-md hover:bg-taupe hover:text-cream transition-all duration-300 flex items-center justify-center gap-2 font-medium tracking-wide text-center w-full sm:w-auto select-none group text-sm sm:text-base"
+                    className="border-2 border-cream text-cream text-center px-6 py-3 rounded-md font-medium flex items-center justify-center gap-2 hover:bg-cream hover:text-taupe transition-all duration-300 select-none"
                   >
-                    <FaWhatsapp className="w-5 h-5 text-[#25D366] group-hover:text-cream transition-colors flex-shrink-0" />
+                    <MessageCircle className="w-4 h-4 text-[#25D366]" />
                     <span>Order on WhatsApp</span>
                   </a>
-                </motion.div>
-
-                {/* Trust badges row below the buttons: wraps properly on mobile */}
-                <motion.div
-                  variants={fadeInUp}
-                  className="pt-3 flex flex-wrap items-center gap-3 sm:gap-6 text-xs text-taupe/75 font-sans"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-gold font-bold text-sm">✓</span>
-                    <span>Free Shipping &gt; ₹1999</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-gold font-bold text-sm">✓</span>
-                    <span>COD Available</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-gold font-bold text-sm">✓</span>
-                    <span>Saudi & Korean Silks</span>
-                  </div>
-                </motion.div>
-              </motion.div>
-
-              {/* RIGHT COLUMN (visual, hidden on mobile) */}
-              <div className="hidden lg:flex items-center justify-center">
-                <motion.div
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="relative w-full max-w-md aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-sand/50 bg-gradient-to-br from-sand via-beige to-sand p-8 flex flex-col justify-between select-none"
-                >
-                  {/* Large circular shape (bg-gold/10) positioned absolute */}
-                  <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-gold/15 blur-2xl pointer-events-none" />
-                  <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-taupe/5 blur-2xl pointer-events-none" />
-
-                  {/* Small decorative dots pattern */}
-                  <div
-                    className="absolute inset-0 opacity-25 pointer-events-none"
-                    style={{
-                      backgroundImage: "radial-gradient(#6B5B4E 1px, transparent 1px)",
-                      backgroundSize: "18px 18px",
-                    }}
-                  />
-
-                  {/* Elegant luxury frame with watermark */}
-                  <div className="relative z-10 w-full h-full border border-gold/30 rounded-xl p-6 flex flex-col justify-between items-center text-center backdrop-blur-[1px] bg-cream/20">
-                    <div className="w-full flex items-center justify-between">
-                      <span className="text-[10px] tracking-[0.3em] uppercase text-taupe/60 font-semibold font-sans">
-                        Luxury Collection
-                      </span>
-                      <Sparkles className="w-4 h-4 text-gold" />
-                    </div>
-
-                    <div className="flex flex-col items-center justify-center space-y-3 my-auto">
-                      <span className="font-serif text-5xl font-bold tracking-widest text-taupe/20 uppercase">
-                        ALSAYYEDAH
-                      </span>
-                      <div className="w-12 h-0.5 bg-gold/50 rounded-full" />
-                      <p className="font-serif text-lg text-taupe/70 italic">
-                        Artisan Modest Identity
-                      </p>
-                      <span className="inline-block text-[10px] font-sans uppercase tracking-[0.25em] text-gold font-semibold bg-taupe/90 text-cream px-3 py-1 rounded-full shadow-sm mt-2">
-                        Timeless Elegance
-                      </span>
-                    </div>
-
-                    <div className="w-full flex items-center justify-between pt-4 border-t border-gold/20 text-[11px] text-taupe/60 font-sans">
-                      <span>Pure Saudi & Korean Silks</span>
-                      <span className="text-gold font-medium">Pan-India Express</span>
-                    </div>
-                  </div>
-                </motion.div>
+                </div>
+                <div className="mt-6 flex flex-wrap gap-3 text-cream/80 text-xs font-sans">
+                  <span className="flex items-center gap-1">
+                    <Check className="w-3 h-3 text-gold" /> Free Shipping above ₹1999
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Check className="w-3 h-3 text-gold" /> COD Available
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Check className="w-3 h-3 text-gold" /> Saudi & Korean Silks
+                  </span>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* ============ DESKTOP VERSION (lg and above) ============ */}
+          <div className="hidden lg:block">
+            <div className="max-w-7xl mx-auto px-4 py-20">
+              <div className="grid grid-cols-2 gap-16 items-center">
+
+                {/* LEFT — Text */}
+                <div>
+                  <p className="text-xs tracking-[0.3em] text-gold uppercase mb-4 font-sans font-semibold">
+                    {content.heroLabel || "MODEST FASHION"}
+                  </p>
+                  <h1 className="font-serif text-6xl text-taupe leading-tight whitespace-pre-line">
+                    {content.heroHeading || "Your Modest\nIdentity"}
+                  </h1>
+                  <p className="mt-5 text-taupe/70 text-lg max-w-md leading-relaxed font-sans">
+                    {content.heroSubtext}
+                  </p>
+                  <div className="mt-8 flex flex-wrap gap-3">
+                    <Link
+                      href="/shop"
+                      className="bg-taupe text-cream px-8 py-4 rounded-md hover:bg-gold transition-all duration-300 font-medium shadow-md"
+                    >
+                      Shop Now
+                    </Link>
+                    <a
+                      href={BRAND.whatsappLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="border-2 border-taupe text-taupe px-8 py-4 rounded-md hover:bg-taupe hover:text-cream transition-all duration-300 flex items-center gap-2 font-medium select-none"
+                    >
+                      <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                      <span>Order on WhatsApp</span>
+                    </a>
+                  </div>
+                  <div className="mt-8 flex flex-wrap gap-4 text-taupe/60 text-sm font-sans">
+                    <span className="flex items-center gap-1.5">
+                      <Check className="w-3.5 h-3.5 text-gold flex-shrink-0" />
+                      Free Shipping above ₹1999
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Check className="w-3.5 h-3.5 text-gold flex-shrink-0" />
+                      COD Available
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Check className="w-3.5 h-3.5 text-gold flex-shrink-0" />
+                      Saudi & Korean Silks
+                    </span>
+                  </div>
+                </div>
+
+                {/* RIGHT — Image */}
+                <div>
+                  {content.heroImages && content.heroImages.length > 0 ? (
+                    <HeroImageSlider images={content.heroImages} />
+                  ) : (
+                    <div className="aspect-[4/5] rounded-lg overflow-hidden bg-gradient-to-br from-sand to-beige shadow-xl flex items-center justify-center">
+                      <p className="font-italiana text-3xl text-taupe/30 tracking-wider">
+                        ALSayyedah
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            </div>
+          </div>
+
         </section>
 
         {/* 2. CATEGORIES SECTION */}
@@ -220,15 +180,8 @@ export default function HomeClient({
                 viewport={{ once: true, amount: 0.25 }}
                 className="w-full flex justify-center"
               >
-                {content.storyImage ? (
-                  <div className="w-full max-w-lg aspect-square sm:aspect-[4/5] rounded-2xl overflow-hidden border border-sand/50 shadow-xl">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={content.storyImage}
-                      alt="ALSayyedah Craftsmanship"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                {content.storyImages && content.storyImages.length > 0 ? (
+                  <BrandStorySlider images={content.storyImages} />
                 ) : (
                   <motion.div
                     animate={{ y: [0, -8, 0] }}

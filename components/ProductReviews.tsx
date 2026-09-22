@@ -18,14 +18,48 @@ export default function ProductReviews({
   const [showAll, setShowAll] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!productId) return;
-
-    const unsubscribe = listenReviewsByProduct(productId, (data) => {
-      setReviews(data);
+    if (!productId) {
       setLoading(false);
-    });
+      return;
+    }
+
+    let isMounted = true;
+    setLoading(true);
+
+    let unsubscribe: (() => void) | undefined;
+    try {
+      unsubscribe = listenReviewsByProduct(
+        productId,
+        (data) => {
+          if (!isMounted) return;
+          setReviews(data || []);
+          setLoading(false);
+        },
+        (err) => {
+          console.error("Reviews listener error:", err);
+          if (!isMounted) return;
+          setReviews([]);
+          setLoading(false);
+        }
+      );
+    } catch (err) {
+      console.error("Failed to start reviews listener:", err);
+      if (isMounted) {
+        setReviews([]);
+        setLoading(false);
+      }
+    }
+
+    // Safety fallback: ensure loading never hangs if network or Firestore listener is blocked
+    const timer = setTimeout(() => {
+      if (isMounted) {
+        setLoading(false);
+      }
+    }, 3000);
 
     return () => {
+      isMounted = false;
+      clearTimeout(timer);
       if (typeof unsubscribe === "function") {
         unsubscribe();
       }

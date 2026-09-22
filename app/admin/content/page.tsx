@@ -156,6 +156,22 @@ export default function AdminContentPage() {
                 placeholder="Premium Burkha, Abaya, Niqab & Hijab..."
               />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-taupe mb-1">
+                Hero Images (1-4)
+              </label>
+              <ImageUploader
+                value={content.heroImages || []}
+                onChange={(urls) =>
+                  setContent({ ...content, heroImages: urls })
+                }
+                maxImages={4}
+              />
+              <p className="text-xs text-taupe/60 mt-2 font-sans">
+                Upload 1-4 images for the hero section (right side on desktop, below text on mobile). They will auto-slide every 5 seconds. Recommended: 800x1000px portrait orientation.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -277,16 +293,10 @@ export default function AdminContentPage() {
 
             <div>
               <label className="block text-sm font-medium text-taupe mb-1">
-                Brand Story Images
+                Brand Story Images (1-5)
               </label>
               <ImageUploader
-                value={
-                  content.storyImages && content.storyImages.length > 0
-                    ? content.storyImages
-                    : content.storyImage
-                    ? [content.storyImage]
-                    : []
-                }
+                value={content.storyImages || []}
                 onChange={(urls) =>
                   setContent({
                     ...content,
@@ -297,7 +307,7 @@ export default function AdminContentPage() {
                 maxImages={5}
               />
               <p className="text-xs text-taupe/60 mt-1.5 font-sans">
-                Upload up to 5 images. They will auto-slide in the brand story section. Recommended: 800x1000px portrait.
+                Upload 1-5 images. They will auto-slide every 4 seconds on the homepage. Recommended: 800x1000px portrait.
               </p>
             </div>
           </div>

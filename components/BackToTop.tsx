@@ -9,11 +9,6 @@ export default function BackToTop() {
   const [isVisible, setIsVisible] = useState(false);
   const pathname = usePathname();
 
-  // Hide on admin routes
-  if (pathname?.startsWith("/admin")) {
-    return null;
-  }
-
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 500) {
@@ -26,6 +21,11 @@ export default function BackToTop() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Hide on admin routes (placed AFTER all hooks)
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   const scrollToTop = () => {
     window.scrollTo({
