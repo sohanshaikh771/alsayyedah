@@ -19,6 +19,11 @@ import {
   subscribeUserAddresses,
   saveAddress,
 } from "@/lib/addresses-firestore";
+import {
+  defaultSettings,
+  listenStoreSettings,
+  StoreSettings,
+} from "@/lib/settings-firestore";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -26,6 +31,7 @@ export default function CheckoutPage() {
   const { user } = useAuth();
 
   const [mounted, setMounted] = useState(false);
+  const [settings, setSettings] = useState<StoreSettings>(defaultSettings);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showMobileSummary, setShowMobileSummary] = useState(false);
 
@@ -65,6 +71,10 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     setMounted(true);
+    const unsubscribe = listenStoreSettings((data) => {
+      setSettings(data);
+    });
+    return () => unsubscribe();
   }, []);
 
   // Subscribe to saved addresses if user is logged in
@@ -112,9 +122,9 @@ export default function CheckoutPage() {
 
   const subtotal = totalPrice();
   const couponDiscount = appliedCoupon ? appliedCoupon.discount : 0;
-  const isFreeShipping = subtotal >= 1999;
-  const shippingFee = isFreeShipping ? 0 : 99;
-  const codFee = 49;
+  const isFreeShipping = subtotal >= settings.freeShippingAbove;
+  const shippingFee = isFreeShipping ? 0 : settings.shippingCharge;
+  const codFee = settings.codCharge;
   const total = Math.max(0, subtotal - couponDiscount) + shippingFee + codFee;
 
   const handleApplyCoupon = async () => {
@@ -276,7 +286,10 @@ ${city.trim()}, ${state.trim()} - ${pincode.replace(/\D/g, "")}
 
 Please confirm my order. Shukriya! 🙏`;
 
-    const waUrl = `https://wa.me/919925837795?text=${encodeURIComponent(message)}`;
+    const waNumber = settings.whatsappNumber
+      ? settings.whatsappNumber.replace(/[^0-9]/g, "")
+      : "919925837795";
+    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
 
     // 3. Open WhatsApp IMMEDIATELY (fresh user gesture — before any await)
     window.open(waUrl, "_blank");
@@ -298,6 +311,7 @@ Please confirm my order. Shukriya! 🙏`;
       subtotal,
       shipping: shippingFee,
       codCharges,
+      freeShippingThreshold: settings.freeShippingAbove,
       total,
       coupon: appliedCoupon
         ? {

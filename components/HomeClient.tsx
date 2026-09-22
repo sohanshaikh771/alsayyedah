@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Sparkles, Heart, Truck, Check, MessageCircle } from "lucide-react";
+import { Sparkles, Heart, Truck, Check, MessageCircle, ChevronDown } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
@@ -15,6 +15,11 @@ import HeroImageSlider from "@/components/HeroImageSlider";
 import { Product } from "@/lib/products-firestore";
 import { SiteContent, defaultContent } from "@/lib/content-firestore";
 import { BRAND } from "@/lib/constants";
+import {
+  StoreSettings,
+  defaultSettings,
+  listenStoreSettings,
+} from "@/lib/settings-firestore";
 import { fadeInUp, staggerContainer, slideInLeft, slideInRight } from "@/lib/animations";
 
 interface HomeClientProps {
@@ -26,136 +31,227 @@ export default function HomeClient({
   initialProducts = [],
   content = defaultContent,
 }: HomeClientProps) {
+  const [settings, setSettings] = useState<StoreSettings>(defaultSettings);
+
+  useEffect(() => {
+    const unsubscribe = listenStoreSettings((data) => setSettings(data));
+    return () => unsubscribe();
+  }, []);
+
+  const waNumber = settings.whatsappNumber
+    ? settings.whatsappNumber.replace(/[^0-9]/g, "")
+    : BRAND.whatsapp;
+  const whatsappLink = `https://wa.me/${waNumber}`;
   return (
     <div className="min-h-screen flex flex-col bg-cream text-taupe">
       <Navbar />
 
       <main className="flex-1">
-        {/* 1. HERO SECTION (Mobile Full-Width vs Desktop Two-Column) */}
-        <section className="relative bg-gradient-to-b from-cream to-beige border-b border-sand/40">
-
-          {/* ============ MOBILE VERSION (below lg) ============ */}
-          <div className="lg:hidden relative min-h-[80vh] flex items-center overflow-hidden">
-            {/* Background image */}
+        {/* 1. HERO SECTION */}
+        <section className="relative border-b border-sand/40">
+          {/* ============ MOBILE + TABLET (< lg) ============ */}
+          <div className="lg:hidden relative min-h-[85vh] flex items-center overflow-hidden">
+            {/* BACKGROUND IMAGE & CINEMATIC OVERLAY */}
             {content.heroImages && content.heroImages.length > 0 ? (
               <div className="absolute inset-0 z-0">
                 <HeroImageSlider images={content.heroImages} fillMode />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/20" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30 z-10 pointer-events-none" />
               </div>
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-beige via-cream to-sand" />
+              <div className="absolute inset-0 bg-gradient-to-br from-beige via-cream to-sand z-0" />
             )}
 
-            {/* Text overlay */}
-            <div className="relative z-10 px-6 py-16 w-full">
-              <div className="max-w-md">
-                <p className="text-xs tracking-[0.3em] text-gold uppercase mb-4 font-sans font-semibold">
-                  {content.heroLabel || "MODEST FASHION"}
-                </p>
-                <h1 className="font-serif text-4xl leading-tight whitespace-pre-line text-cream drop-shadow-lg">
-                  {content.heroHeading || "Your Modest\nIdentity"}
-                </h1>
-                <p className="mt-4 text-cream/90 text-base leading-relaxed font-sans">
-                  {content.heroSubtext}
-                </p>
-                <div className="mt-6 flex flex-col gap-3">
-                  <Link
-                    href="/shop"
-                    className="bg-cream text-taupe text-center px-6 py-3 rounded-md font-medium shadow-md hover:bg-gold hover:text-cream transition-all duration-300"
-                  >
-                    Shop Now
-                  </Link>
-                  <a
-                    href={BRAND.whatsappLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="border-2 border-cream text-cream text-center px-6 py-3 rounded-md font-medium flex items-center justify-center gap-2 hover:bg-cream hover:text-taupe transition-all duration-300 select-none"
-                  >
-                    <MessageCircle className="w-4 h-4 text-[#25D366]" />
-                    <span>Order on WhatsApp</span>
-                  </a>
-                </div>
-                <div className="mt-6 flex flex-wrap gap-3 text-cream/80 text-xs font-sans">
-                  <span className="flex items-center gap-1">
-                    <Check className="w-3 h-3 text-gold" /> Free Shipping above ₹1999
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Check className="w-3 h-3 text-gold" /> COD Available
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Check className="w-3 h-3 text-gold" /> Saudi & Korean Silks
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ============ DESKTOP VERSION (lg and above) ============ */}
-          <div className="hidden lg:block">
-            <div className="max-w-7xl mx-auto px-4 py-20">
-              <div className="grid grid-cols-2 gap-16 items-center">
-
-                {/* LEFT — Text */}
-                <div>
-                  <p className="text-xs tracking-[0.3em] text-gold uppercase mb-4 font-sans font-semibold">
+            {/* EDITORIAL CONTENT OVERLAY */}
+            <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 py-20 w-full">
+              <div className="max-w-xl text-left">
+                {/* UPGRADE 1 & 2: Label with gold accents and wider tracking */}
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="flex items-center gap-3 mb-6"
+                >
+                  <span className="w-8 h-[1px] bg-gold/70" />
+                  <span className="text-[10px] md:text-xs font-semibold tracking-[0.4em] text-gold uppercase font-sans">
                     {content.heroLabel || "MODEST FASHION"}
-                  </p>
-                  <h1 className="font-serif text-6xl text-taupe leading-tight whitespace-pre-line">
-                    {content.heroHeading || "Your Modest\nIdentity"}
-                  </h1>
-                  <p className="mt-5 text-taupe/70 text-lg max-w-md leading-relaxed font-sans">
-                    {content.heroSubtext}
-                  </p>
-                  <div className="mt-8 flex flex-wrap gap-3">
+                  </span>
+                  <span className="w-8 h-[1px] bg-gold/70" />
+                </motion.div>
+
+                {/* UPGRADE 1 & 2: Big Serif Heading */}
+                <motion.h1
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="font-serif text-5xl md:text-6xl leading-[1.1] text-cream drop-shadow-2xl tracking-tight whitespace-pre-line"
+                >
+                  {(content.heroHeading || "Your Modest\nIdentity")
+                    .split("\n")
+                    .map((line, idx) => (
+                      <React.Fragment key={idx}>
+                        {idx > 0 && <br />}
+                        {line}
+                      </React.Fragment>
+                    ))}
+                </motion.h1>
+
+                {/* UPGRADE 1 & 2: Subtext with elegant styling */}
+                <motion.p
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                  className="mt-5 text-cream/85 text-base md:text-lg max-w-md leading-relaxed font-serif italic"
+                >
+                  {content.heroSubtext}
+                </motion.p>
+
+                {/* UPGRADE 5: Subtle Gold Accent Line */}
+                <motion.div
+                  initial={{ opacity: 0, scaleX: 0 }}
+                  animate={{ opacity: 1, scaleX: 1 }}
+                  transition={{ duration: 0.8, delay: 0.7 }}
+                  className="origin-left mt-6 mb-6"
+                >
+                  <div className="w-12 h-[2px] bg-gold" />
+                </motion.div>
+
+                {/* UPGRADE 1 & 3: Better CTA Buttons */}
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.8 }}
+                  className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center"
+                >
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                     <Link
                       href="/shop"
-                      className="bg-taupe text-cream px-8 py-4 rounded-md hover:bg-gold transition-all duration-300 font-medium shadow-md"
+                      className="block bg-cream text-taupe px-8 py-4 rounded-md uppercase tracking-wider text-sm font-semibold shadow-lg hover:shadow-xl hover:bg-gold hover:text-cream transition-all duration-300 text-center"
                     >
                       Shop Now
                     </Link>
+                  </motion.div>
+
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                     <a
                       href={BRAND.whatsappLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="border-2 border-taupe text-taupe px-8 py-4 rounded-md hover:bg-taupe hover:text-cream transition-all duration-300 flex items-center gap-2 font-medium select-none"
+                      className="border-2 border-cream text-cream backdrop-blur-sm bg-black/10 px-8 py-4 rounded-md uppercase tracking-wider text-sm font-semibold hover:bg-cream hover:text-taupe transition-all duration-300 flex items-center justify-center gap-2 select-none text-center"
                     >
                       <MessageCircle className="w-4 h-4 text-[#25D366]" />
                       <span>Order on WhatsApp</span>
                     </a>
+                  </motion.div>
+                </motion.div>
+
+                {/* UPGRADE 1 & 4: Trust Badges with Elegant Separators */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 1.0 }}
+                  className="mt-8 flex flex-wrap items-center gap-2.5 sm:gap-3 text-cream/80 text-xs sm:text-sm font-sans"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-gold flex-shrink-0" />
+                    Free Shipping above ₹{settings.freeShippingAbove.toLocaleString("en-IN")}
+                  </span>
+                  <span className="text-gold/70">•</span>
+                  <span className="flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-gold flex-shrink-0" />
+                    COD Available
+                  </span>
+                  <span className="text-gold/70">•</span>
+                  <span className="flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-gold flex-shrink-0" />
+                    Saudi & Korean Silks
+                  </span>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* UPGRADE 6: Subtle Scroll Hint at Bottom */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-cream/50 text-[10px] tracking-[0.3em] uppercase flex flex-col items-center gap-1.5 animate-bounce pointer-events-none z-20">
+              <span>Scroll</span>
+              <ChevronDown className="w-4 h-4 text-gold/80" />
+            </div>
+          </div>
+
+          {/* ============ DESKTOP (lg and above) ============ */}
+          <div className="hidden lg:block bg-gradient-to-br from-cream via-beige to-sand">
+            <div className="max-w-7xl mx-auto px-6 py-24">
+              <div className="grid grid-cols-2 gap-16 items-center">
+                {/* LEFT: Text content */}
+                <div>
+                  <p className="text-xs tracking-[0.4em] text-gold uppercase mb-6 font-semibold">
+                    {content.heroLabel || "MODEST FASHION"}
+                  </p>
+
+                  <h1 className="font-serif text-7xl text-taupe leading-[1.05] whitespace-pre-line">
+                    {content.heroHeading || "Your Modest\nIdentity"}
+                  </h1>
+
+                  <p className="mt-6 text-taupe/70 text-lg italic font-serif max-w-md leading-relaxed">
+                    {content.heroSubtext}
+                  </p>
+
+                  {/* Gold accent line */}
+                  <div className="w-16 h-[2px] bg-gold my-8" />
+
+                  <div className="flex flex-wrap gap-4">
+                    <Link
+                      href="/shop"
+                      className="bg-taupe text-cream px-8 py-4 rounded-md hover:bg-gold transition-all duration-300 uppercase tracking-wider text-sm font-semibold shadow-lg hover:shadow-xl"
+                    >
+                      Shop Now
+                    </Link>
+                    <a
+                      href={whatsappLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="border-2 border-taupe text-taupe px-8 py-4 rounded-md hover:bg-taupe hover:text-cream transition-all duration-300 uppercase tracking-wider text-sm font-semibold flex items-center gap-2"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      Order on WhatsApp
+                    </a>
                   </div>
-                  <div className="mt-8 flex flex-wrap gap-4 text-taupe/60 text-sm font-sans">
+
+                  {/* Trust badges */}
+                  <div className="mt-8 flex flex-wrap gap-4 text-taupe/60 text-sm">
                     <span className="flex items-center gap-1.5">
-                      <Check className="w-3.5 h-3.5 text-gold flex-shrink-0" />
-                      Free Shipping above ₹1999
+                      <Check className="w-3.5 h-3.5 text-gold" />
+                      Free Shipping above ₹{settings.freeShippingAbove.toLocaleString("en-IN")}
                     </span>
+                    <span className="text-taupe/30">•</span>
                     <span className="flex items-center gap-1.5">
-                      <Check className="w-3.5 h-3.5 text-gold flex-shrink-0" />
+                      <Check className="w-3.5 h-3.5 text-gold" />
                       COD Available
                     </span>
+                    <span className="text-taupe/30">•</span>
                     <span className="flex items-center gap-1.5">
-                      <Check className="w-3.5 h-3.5 text-gold flex-shrink-0" />
+                      <Check className="w-3.5 h-3.5 text-gold" />
                       Saudi & Korean Silks
                     </span>
                   </div>
                 </div>
 
-                {/* RIGHT — Image */}
-                <div>
+                {/* RIGHT: Image */}
+                <div className="flex justify-center">
                   {content.heroImages && content.heroImages.length > 0 ? (
-                    <HeroImageSlider images={content.heroImages} />
+                    <div className="w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl relative">
+                      {/* Use the slider with normal aspect ratio mode */}
+                      <HeroImageSlider images={content.heroImages} />
+                    </div>
                   ) : (
-                    <div className="aspect-[4/5] rounded-lg overflow-hidden bg-gradient-to-br from-sand to-beige shadow-xl flex items-center justify-center">
-                      <p className="font-italiana text-3xl text-taupe/30 tracking-wider">
+                    <div className="w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden bg-gradient-to-br from-sand to-beige shadow-2xl flex items-center justify-center">
+                      <p className="font-italiana text-4xl text-taupe/30 tracking-wider">
                         ALSayyedah
                       </p>
                     </div>
                   )}
                 </div>
-
               </div>
             </div>
           </div>
-
         </section>
 
         {/* 2. CATEGORIES SECTION */}
@@ -188,11 +284,6 @@ export default function HomeClient({
                     transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                     className="relative w-full max-w-lg aspect-square sm:aspect-[4/5] rounded-2xl overflow-hidden border border-sand/50 shadow-xl bg-gradient-to-br from-sand via-beige to-sand/90 p-8 flex flex-col justify-between select-none"
                   >
-                    {/* Large decorative serif letter "A" centered watermark */}
-                    <span className="absolute inset-0 flex items-center justify-center font-serif text-[12rem] font-bold text-taupe/10 select-none pointer-events-none">
-                      A
-                    </span>
-
                     {/* Thin gold circle outline (absolute top-8 right-8, w-32 h-32) */}
                     <div className="absolute top-8 right-8 w-32 h-32 border border-gold/30 rounded-full pointer-events-none" />
 

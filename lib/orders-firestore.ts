@@ -44,6 +44,7 @@ export type Order = {
   subtotal?: number;
   shipping?: number;
   codCharges?: number;
+  freeShippingThreshold?: number;
   total: number;
   coupon?: {
     code: string;

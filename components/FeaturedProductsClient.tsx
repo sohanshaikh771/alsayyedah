@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Package } from "lucide-react";
+import { Package, ArrowRight } from "lucide-react";
 import { Product, getFeaturedProducts, getAllProducts } from "@/lib/products-firestore";
 import { BRAND } from "@/lib/constants";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
@@ -25,17 +25,17 @@ export default function FeaturedProductsClient({
   useEffect(() => {
     let isMounted = true;
 
-    // If fewer than 3 products were passed, fetch and fill up to 8
-    if (initialProducts.length < 3) {
+    // If fewer than 4 products were passed, fetch and fill up to 8
+    if (initialProducts.length < 4) {
       setLoading(true);
       getFeaturedProducts()
         .then(async (featured) => {
-          let list = featured;
-          if (list.length < 3) {
+          let list = [...featured];
+          if (list.length < 4) {
             const all = await getAllProducts();
-            const existingIds = new Set(list.map((p) => p.id));
-            const additional = all.filter((p) => !existingIds.has(p.id));
-            list = [...list, ...additional];
+            const featuredIds = new Set(featured.map((p) => p.id));
+            const others = all.filter((p) => !featuredIds.has(p.id));
+            list = [...featured, ...others].slice(0, 8);
           }
           if (isMounted) {
             setProducts(list.slice(0, 8));
@@ -57,40 +57,53 @@ export default function FeaturedProductsClient({
   }, [initialProducts]);
 
   return (
-    <section className="relative overflow-hidden isolate bg-beige py-10 sm:py-16 border-t border-sand/40">
-      {/* Subtle decorative background circle behind grid */}
+    <section className="relative overflow-hidden isolate bg-gradient-to-b from-cream to-beige py-16 md:py-24 border-t border-sand/40">
+      {/* Decorative background glow elements */}
       <div
-        className="absolute top-20 right-0 -z-10 w-96 h-96 rounded-full bg-gold/5 blur-3xl pointer-events-none"
+        className="absolute top-1/4 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl -z-10 pointer-events-none"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute bottom-1/4 left-0 w-72 h-72 bg-sand/40 rounded-full blur-3xl -z-10 pointer-events-none"
         aria-hidden="true"
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <motion.span
+        <div className="text-center mb-12 md:mb-16">
+          {/* Small label with gold lines on sides */}
+          <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5 }}
-            className="text-gold text-xs tracking-[0.3em] uppercase font-semibold block"
+            className="flex items-center justify-center gap-3 mb-4"
           >
-            HANDPICKED
-          </motion.span>
+            <span className="w-8 h-[1px] bg-gold/60" />
+            <p className="text-[10px] md:text-xs tracking-[0.4em] text-gold uppercase font-semibold font-sans">
+              HANDPICKED
+            </p>
+            <span className="w-8 h-[1px] bg-gold/60" />
+          </motion.div>
+
+          {/* Main heading — bigger serif */}
           <motion.h2
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="font-serif text-3xl sm:text-4xl text-taupe mt-2 tracking-wide"
+            className="font-serif text-4xl md:text-5xl text-taupe leading-tight"
           >
             {title}
           </motion.h2>
+
+          {/* Subtext — italic serif, elegant */}
           <motion.p
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-taupe/60 text-center mt-2 max-w-lg mx-auto font-sans text-sm sm:text-base leading-relaxed"
+            className="mt-4 text-taupe/60 text-sm md:text-base italic font-serif max-w-lg mx-auto leading-relaxed"
           >
             Our best sellers loved by customers
           </motion.p>
@@ -98,7 +111,7 @@ export default function FeaturedProductsClient({
 
         {/* Product Grid or Empty State */}
         {loading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
             {Array.from({ length: 4 }).map((_, idx) => (
               <ProductCardSkeleton key={idx} />
             ))}
@@ -110,7 +123,7 @@ export default function FeaturedProductsClient({
               initial="initial"
               whileInView="animate"
               viewport={{ once: true, amount: 0.15 }}
-              className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6"
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8"
             >
               {products.map((product) => (
                 <motion.div key={product.id} variants={fadeInUp}>
@@ -119,19 +132,20 @@ export default function FeaturedProductsClient({
               ))}
             </motion.div>
 
-            {/* "View All Products" Button */}
+            {/* View All Products Button */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="mt-10 sm:mt-12 flex justify-center"
+              className="mt-12 md:mt-16 text-center"
             >
               <Link
                 href="/shop"
-                className="border-2 border-taupe text-taupe px-8 py-3.5 min-h-[44px] rounded-md hover:bg-taupe hover:text-cream transition-all duration-300 font-medium tracking-wide text-sm font-sans inline-flex items-center justify-center w-full sm:w-auto max-w-xs shadow-sm hover:shadow-md"
+                className="group inline-flex items-center gap-3 border-2 border-taupe text-taupe px-8 md:px-10 py-3 md:py-4 rounded-md hover:bg-taupe hover:text-cream transition-all duration-300 uppercase tracking-wider text-xs md:text-sm font-semibold shadow-sm hover:shadow-md"
               >
-                View All Products →
+                <span>View All Products</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </motion.div>
           </>

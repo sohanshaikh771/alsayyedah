@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Heart, Menu, X, LogOut, User } from "lucide-react";
+import { ShoppingBag, Heart, Menu, X, User } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-store";
 import { useWishlist } from "@/lib/wishlist-store";
@@ -19,7 +19,7 @@ export default function Navbar() {
   const [currentQuery, setCurrentQuery] = useState("");
   const [dynamicCategories, setDynamicCategories] = useState<{ label: string; href: string }[]>([]);
 
-  const { user, role, logout } = useAuth();
+  const { user, role } = useAuth();
   const totalItems = useCart((s) => s.totalItems());
   const totalWishlistItems = useWishlist((s) => s.totalItems());
 
@@ -105,15 +105,15 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
+        <div className="flex items-center justify-between h-14 md:h-20">
           {/* Left: Brand Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-baseline gap-2 md:gap-3 group select-none">
-              <span className="font-italiana text-2xl md:text-4xl text-taupe tracking-[0.12em] group-hover:text-gold transition-colors duration-300">
+            <Link href="/" className="flex items-baseline gap-1.5 md:gap-3 group select-none whitespace-nowrap">
+              <span className="font-italiana text-lg md:text-4xl text-taupe tracking-[0.08em] md:tracking-[0.12em] group-hover:text-gold transition-colors duration-300">
                 ALSayyedah
               </span>
               <span 
-                className="hidden md:inline font-amiri text-xl md:text-2xl text-gold/70 group-hover:text-gold transition-colors duration-300" 
+                className="font-amiri text-xs md:text-2xl text-gold/70 group-hover:text-gold transition-colors duration-300" 
                 dir="rtl"
               >
                 السيدة
@@ -148,20 +148,20 @@ export default function Navbar() {
           </nav>
 
           {/* Right Side Icons */}
-          <div className="flex items-center space-x-1 sm:space-x-1.5 md:space-x-2">
+          <div className="flex items-center gap-1.5 md:gap-4">
             {/* a) Search Icon */}
             <SearchBar />
 
             {/* b) Wishlist Icon */}
             <Link
               href="/wishlist"
-              className="relative p-2 min-w-[40px] min-h-[40px] hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 group flex items-center justify-center"
+              className="relative p-1.5 md:p-2 min-w-[36px] min-h-[36px] md:min-w-[40px] md:min-h-[40px] hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 group flex items-center justify-center"
               aria-label="Wishlist"
               title="Wishlist"
             >
-              <Heart className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
+              <Heart className="w-[18px] h-[18px] md:w-5 md:h-5 transition-transform duration-200 group-hover:scale-110" />
               {wishlistCount > 0 && (
-                <span className="absolute 1 top-0.5 right-0.5 bg-gold text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-semibold shadow-xs">
+                <span className="absolute -top-0.5 -right-0.5 bg-gold text-white text-[8px] md:text-[10px] w-3 h-3 md:w-4 md:h-4 rounded-full flex items-center justify-center font-semibold shadow-xs">
                   {wishlistCount}
                 </span>
               )}
@@ -170,13 +170,13 @@ export default function Navbar() {
             {/* c) Cart Icon */}
             <Link
               href="/cart"
-              className="relative p-2 min-w-[40px] min-h-[40px] hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 group flex items-center justify-center"
+              className="relative p-1.5 md:p-2 min-w-[36px] min-h-[36px] md:min-w-[40px] md:min-h-[40px] hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 group flex items-center justify-center"
               aria-label="Shopping Cart"
               title="Shopping Cart"
             >
-              <ShoppingBag className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
+              <ShoppingBag className="w-[18px] h-[18px] md:w-5 md:h-5 transition-transform duration-200 group-hover:scale-110" />
               {itemCount > 0 && (
-                <span className="absolute top-0.5 right-0.5 bg-gold text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-semibold shadow-xs">
+                <span className="absolute -top-0.5 -right-0.5 bg-gold text-white text-[8px] md:text-[10px] w-3 h-3 md:w-4 md:h-4 rounded-full flex items-center justify-center font-semibold shadow-xs">
                   {itemCount}
                 </span>
               )}
@@ -197,7 +197,7 @@ export default function Navbar() {
                     </Link>
                   )}
 
-                  {/* e) User Icon */}
+                  {/* User Icon */}
                   <Link
                     href="/account"
                     className="p-2 min-w-[40px] min-h-[40px] hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 group flex items-center justify-center"
@@ -206,17 +206,6 @@ export default function Navbar() {
                   >
                     <User className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
                   </Link>
-
-                  {/* f) Logout Icon */}
-                  <button
-                    type="button"
-                    onClick={() => logout()}
-                    className="p-2 min-w-[40px] min-h-[40px] hover:bg-beige rounded-full text-taupe hover:text-red-500 transition-all duration-200 cursor-pointer flex items-center justify-center group"
-                    title="Logout"
-                    aria-label="Logout"
-                  >
-                    <LogOut className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
-                  </button>
                 </div>
               ) : (
                 <Link
@@ -233,13 +222,13 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 min-w-[44px] min-h-[44px] hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 focus:outline-none cursor-pointer flex items-center justify-center"
+                className="p-1.5 min-w-[36px] min-h-[36px] hover:bg-beige rounded-full text-taupe hover:text-gold transition-all duration-200 focus:outline-none cursor-pointer flex items-center justify-center"
                 aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               >
                 {mobileMenuOpen ? (
-                  <X className="w-6 h-6 transition-transform duration-200" />
+                  <X className="w-5 h-5 transition-transform duration-200" />
                 ) : (
-                  <Menu className="w-6 h-6 transition-transform duration-200" />
+                  <Menu className="w-5 h-5 transition-transform duration-200" />
                 )}
               </button>
             </div>
@@ -300,37 +289,24 @@ export default function Navbar() {
 
             <div className="p-4 bg-beige/40 flex items-center justify-between">
               {user ? (
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-3">
-                    {isAdmin && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="bg-gold text-white px-2 py-0.5 rounded text-[10px] font-semibold tracking-wider uppercase"
-                      >
-                        ADMIN
-                      </Link>
-                    )}
+                <div className="flex items-center gap-3">
+                  {isAdmin && (
                     <Link
-                      href="/account"
+                      href="/admin"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-1.5 text-sm font-medium text-taupe hover:text-gold transition-colors"
+                      className="bg-gold text-white px-2 py-0.5 rounded text-[10px] font-semibold tracking-wider uppercase"
                     >
-                      <User className="w-4 h-4" />
-                      <span>My Account</span>
+                      ADMIN
                     </Link>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      logout();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="flex items-center gap-1.5 text-sm font-medium text-taupe hover:text-red-500 transition-colors cursor-pointer"
+                  )}
+                  <Link
+                    href="/account"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-1.5 text-sm font-medium text-taupe hover:text-gold transition-colors"
                   >
-                    <span>Logout</span>
-                    <LogOut className="w-4 h-4" />
-                  </button>
+                    <User className="w-4 h-4" />
+                    <span>My Account</span>
+                  </Link>
                 </div>
               ) : (
                 <Link

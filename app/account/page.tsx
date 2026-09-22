@@ -3,6 +3,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import {
   User as UserIcon,
@@ -113,6 +114,7 @@ function AccountContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, loading: authLoading, loginGoogle, logout } = useAuth();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   // Active tab state
   const tabParam = searchParams.get("tab");
@@ -233,11 +235,14 @@ function AccountContent() {
 
   // Handle Logout
   const handleLogout = async () => {
+    setShowLogoutConfirm(false);
     try {
       await logout();
+      toast.success("Logged out successfully");
       router.push("/");
     } catch (err) {
       console.error("Logout failed:", err);
+      toast.error("Failed to logout");
     }
   };
 
@@ -559,7 +564,7 @@ function AccountContent() {
                 {/* Logout Button */}
                 <button
                   type="button"
-                  onClick={handleLogout}
+                  onClick={() => setShowLogoutConfirm(true)}
                   className="flex items-center gap-2 sm:gap-3 px-3.5 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-rose-700/80 hover:text-rose-900 bg-rose-50/50 hover:bg-rose-100/50 rounded-full lg:rounded-md transition-colors duration-150 text-left cursor-pointer whitespace-nowrap flex-shrink-0 min-h-[40px]"
                 >
                   <LogOut className="w-4 h-4 shrink-0" />
@@ -1093,6 +1098,53 @@ function AccountContent() {
           </div>
         </div>
       )}
+
+      {/* Logout Confirmation Modal */}
+      <AnimatePresence>
+        {showLogoutConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+            onClick={() => setShowLogoutConfirm(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-cream rounded-xl shadow-2xl p-6 w-full max-w-sm"
+            >
+              <div className="w-14 h-14 rounded-full bg-beige flex items-center justify-center mx-auto mb-4">
+                <LogOut className="w-6 h-6 text-taupe" />
+              </div>
+              <h3 className="font-serif text-2xl text-taupe text-center">
+                Logout?
+              </h3>
+              <p className="text-taupe/70 text-sm text-center mt-2 leading-relaxed">
+                Are you sure you want to logout? Your cart will be saved.
+              </p>
+              <div className="flex gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowLogoutConfirm(false)}
+                  className="flex-1 border-2 border-sand text-taupe py-3 rounded-md hover:bg-beige transition font-medium text-sm cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex-1 bg-taupe text-cream py-3 rounded-md hover:bg-red-600 transition font-medium text-sm cursor-pointer"
+                >
+                  Yes, Logout
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </div>

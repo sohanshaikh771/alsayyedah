@@ -11,15 +11,16 @@ export default async function Home() {
     getSiteContent(),
   ]);
 
-  let products: Product[] = featured;
-  if (products.length < 3) {
+  let productsToShow = [...featured];
+
+  if (productsToShow.length < 4) {
     const all = await getAllProducts();
-    const existingIds = new Set(products.map((p) => p.id));
-    const additional = all.filter((p) => !existingIds.has(p.id));
-    products = [...products, ...additional];
+    const featuredIds = new Set(featured.map((p) => p.id));
+    const others = all.filter((p) => !featuredIds.has(p.id));
+    productsToShow = [...featured, ...others].slice(0, 8);
   }
 
-  const initialProducts = products.slice(0, 8);
+  const initialProducts = productsToShow.slice(0, 8);
 
   return <HomeClient initialProducts={initialProducts} content={content} />;
 }

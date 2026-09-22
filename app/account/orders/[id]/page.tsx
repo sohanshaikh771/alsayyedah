@@ -199,10 +199,23 @@ export default function OrderDetailPage() {
     0
   );
   const subtotal = itemsSubtotal > 0 ? itemsSubtotal : (order.total || 0);
-  const isFreeShipping = subtotal >= 1999;
-  const shippingFee = isFreeShipping ? 0 : 99;
+  const isFreeShipping =
+    typeof order.shipping === "number"
+      ? order.shipping === 0
+      : subtotal >= (order.freeShippingThreshold || 1999);
+  const shippingFee =
+    typeof order.shipping === "number"
+      ? order.shipping
+      : isFreeShipping
+      ? 0
+      : 99;
   const isCOD = order.paymentMethod === "COD" || !order.paymentMethod;
-  const codFee = isCOD ? 49 : 0;
+  const codFee =
+    typeof order.codCharges === "number"
+      ? order.codCharges
+      : isCOD
+      ? 49
+      : 0;
   const totalAmount = order.total || subtotal + shippingFee + codFee;
 
   const whatsappMessage = encodeURIComponent(

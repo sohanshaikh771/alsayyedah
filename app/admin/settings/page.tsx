@@ -1,37 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getSiteContent, updateSiteContent } from "@/lib/content-firestore";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import {
+  StoreSettings,
+  defaultSettings,
+  getStoreSettings,
+} from "@/lib/settings-firestore";
 import toast from "react-hot-toast";
 import { Save, Loader2, Check, Store, Share2, Truck } from "lucide-react";
-
-interface StoreSettings {
-  storeName: string;
-  tagline: string;
-  phone: string;
-  email: string;
-  instagramUrl: string;
-  whatsappNumber: string;
-  facebookUrl: string;
-  freeShippingAbove: number;
-  shippingCharge: number;
-  codCharge: number;
-}
-
-const defaultSettings: StoreSettings = {
-  storeName: "ALSayyedah",
-  tagline: "Your Modest Identity",
-  phone: "+91 99258 37795",
-  email: "support@alsayyedah.in",
-  instagramUrl: "https://www.instagram.com/alsayyedah.in/",
-  whatsappNumber: "919925837795",
-  facebookUrl: "",
-  freeShippingAbove: 1999,
-  shippingCharge: 99,
-  codCharge: 49,
-};
 
 export default function AdminSettingsPage() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -40,26 +18,13 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<StoreSettings>(defaultSettings);
 
   useEffect(() => {
-    async function fetchSettings() {
-      try {
-        const snap = await getDoc(doc(db, "settings", "store"));
-        if (snap.exists()) {
-          const data = snap.data() as Partial<StoreSettings>;
-          setSettings({
-            ...defaultSettings,
-            ...data,
-          });
-        } else {
-          setSettings(defaultSettings);
-        }
-      } catch (err) {
+    getStoreSettings()
+      .then((data) => setSettings(data))
+      .catch((err) => {
         console.error("Failed to load store settings from Firestore:", err);
         toast.error("Failed to load settings");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchSettings();
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const handleSave = async (e?: React.FormEvent) => {

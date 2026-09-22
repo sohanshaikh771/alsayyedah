@@ -9,28 +9,41 @@ import Footer from "@/components/Footer";
 import PremiumButton from "@/components/PremiumButton";
 import { useCart } from "@/lib/cart-store";
 import { BRAND } from "@/lib/constants";
+import {
+  defaultSettings,
+  listenStoreSettings,
+  StoreSettings,
+} from "@/lib/settings-firestore";
 import toast from "react-hot-toast";
 
 export default function CartPage() {
   const [mounted, setMounted] = useState(false);
+  const [settings, setSettings] = useState<StoreSettings>(defaultSettings);
   const { items, updateQty, removeItem, totalPrice } = useCart();
 
   useEffect(() => {
     setMounted(true);
+    const unsubscribe = listenStoreSettings((data) => {
+      setSettings(data);
+    });
+    return () => unsubscribe();
   }, []);
 
   const subtotal = totalPrice();
-  const isFreeShipping = subtotal >= 1999;
-  const shippingFee = isFreeShipping ? 0 : 99;
-  const codFee = 49;
+  const isFreeShipping = subtotal >= settings.freeShippingAbove;
+  const shippingFee = isFreeShipping ? 0 : settings.shippingCharge;
+  const codFee = settings.codCharge;
   const total = subtotal + shippingFee + codFee;
 
+  const waNumber = settings.whatsappNumber
+    ? settings.whatsappNumber.replace(/[^0-9]/g, "")
+    : BRAND.whatsapp;
   const waCartMessage = encodeURIComponent(
-    `Hi ${BRAND.name}! I would like to order my cart items:\n\n` +
+    `Hi ${settings.storeName || BRAND.name}! I would like to order my cart items:\n\n` +
     items.map((i) => `• ${i.name} (${i.size}, ${i.color}) x${i.qty} = ₹${i.price * i.qty}`).join("\n") +
     `\n\nTotal: ₹${total}\nPlease assist with order confirmation.`
   );
-  const waCartUrl = `${BRAND.whatsappLink}?text=${waCartMessage}`;
+  const waCartUrl = `https://wa.me/${waNumber}?text=${waCartMessage}`;
 
   return (
     <div className="min-h-screen flex flex-col bg-cream text-taupe">
@@ -154,7 +167,7 @@ export default function CartPage() {
                     <span>Shipping</span>
                     {!isFreeShipping && (
                       <p className="text-[11px] text-taupe/60">
-                        Add ₹{(1999 - subtotal).toLocaleString("en-IN")} more for FREE shipping
+                        Add ₹{(settings.freeShippingAbove - subtotal).toLocaleString("en-IN")} more for FREE shipping
                       </p>
                     )}
                   </div>

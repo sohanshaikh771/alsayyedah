@@ -15,6 +15,11 @@ import SizeGuideModal from "@/components/SizeGuideModal";
 import WishlistButton from "@/components/WishlistButton";
 import ProductReviews from "./ProductReviews";
 import ReviewForm from "./ReviewForm";
+import {
+  StoreSettings,
+  defaultSettings,
+  listenStoreSettings,
+} from "@/lib/settings-firestore";
 
 interface ProductDetailProps {
   product: Product;
@@ -24,6 +29,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const router = useRouter();
   const { addItem } = useCart();
 
+  const [settings, setSettings] = useState<StoreSettings>(defaultSettings);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [imageErrorMap, setImageErrorMap] = useState<Record<number, boolean>>({});
   const [selectedSize, setSelectedSize] = useState(product.sizes[0] || "");
@@ -33,6 +39,11 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const [showStickyBar, setShowStickyBar] = useState(false);
 
   const mainCtaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const unsubscribe = listenStoreSettings((data) => setSettings(data));
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -96,7 +107,11 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     );
   };
 
-  const orderMessage = `Hi ${BRAND.name}! I would like to order:
+  const storeName = settings.storeName || BRAND.name;
+  const waNumber = settings.whatsappNumber
+    ? settings.whatsappNumber.replace(/[^0-9]/g, "")
+    : BRAND.whatsapp;
+  const orderMessage = `Hi ${storeName}! I would like to order:
 • Product: ${product.name}
 • Size: ${selectedSize || "Standard"}
 • Color: ${selectedColor || "Standard"}
@@ -105,7 +120,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
 Please let me know how to proceed with payment and shipping.`;
 
-  const whatsappOrderUrl = `${BRAND.whatsappLink}?text=${encodeURIComponent(orderMessage)}`;
+  const whatsappOrderUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(orderMessage)}`;
 
   return (
     <div>
@@ -399,7 +414,9 @@ Please let me know how to proceed with payment and shipping.`;
           </div>
           <div className="flex items-center gap-2.5">
             <Truck className="w-4 h-4 text-gold flex-shrink-0" />
-            <span>Free shipping on all orders across India above ₹1,999</span>
+            <span>
+              Free shipping on all orders across India above ₹{settings.freeShippingAbove.toLocaleString("en-IN")}
+            </span>
           </div>
           <div className="flex items-center gap-2.5">
             <Banknote className="w-4 h-4 text-gold flex-shrink-0" />
