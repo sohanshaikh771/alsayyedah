@@ -7,6 +7,7 @@ import BackToTop from "@/components/BackToTop";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import PageTransition from "@/components/PageTransition";
 import { Toaster } from "react-hot-toast";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
 const italiana = Italiana({
@@ -141,6 +142,7 @@ export default function RootLayout({
             }}
           />
         </AuthProvider>
+        <GoogleAnalytics gaId="G-8SJQE5WSCF" />
       </body>
     </html>
   );
