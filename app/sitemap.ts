@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://alsayyedah.in";
+  const baseUrl = "https://alsayyedah.us.ci";
   return [
     { url: baseUrl, lastModified: new Date(), priority: 1.0 },
     { url: `${baseUrl}/shop`, lastModified: new Date(), priority: 0.9 },

@@ -5,8 +5,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/admin/", "/account/", "/checkout/", "/cart/"],
+      disallow: ["/admin/", "/account/", "/checkout/", "/cart/", "/login/"],
     },
-    sitemap: "https://alsayyedah.in/sitemap.xml",
+    sitemap: "https://alsayyedah.us.ci/sitemap.xml",
   };
 }

@@ -164,7 +164,7 @@ export default function AdminSettingsPage() {
                 value={settings.email}
                 onChange={(e) => handleChange("email", e.target.value)}
                 className="w-full bg-cream border border-sand rounded-md px-3 py-2 text-taupe focus:border-gold focus:outline-none transition-colors"
-                placeholder="support@alsayyedah.in"
+                placeholder="support@alsayyedah.us.ci"
               />
             </div>
           </div>
@@ -189,7 +189,7 @@ export default function AdminSettingsPage() {
                 value={settings.instagramUrl}
                 onChange={(e) => handleChange("instagramUrl", e.target.value)}
                 className="w-full bg-cream border border-sand rounded-md px-3 py-2 text-taupe focus:border-gold focus:outline-none transition-colors"
-                placeholder="https://instagram.com/alsayyedah.in"
+                placeholder="https://instagram.com/alsayyedah.us.ci"
               />
             </div>
 

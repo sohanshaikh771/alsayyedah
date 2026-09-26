@@ -38,7 +38,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://alsayyedah.in"),
+  metadataBase: new URL("https://alsayyedah.us.ci"),
   title: {
     default: "ALSayyedah — Your Modest Identity | Premium Abaya, Burkha, Niqab & Hijab",
     template: "%s | ALSayyedah",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://alsayyedah.in",
+    url: "https://alsayyedah.us.ci",
     siteName: "ALSayyedah",
     title: "ALSayyedah — Your Modest Identity",
     description: "Premium Abaya, Burkha, Niqab & Hijab. Handcrafted modest fashion delivered across India.",

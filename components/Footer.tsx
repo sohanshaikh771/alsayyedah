@@ -139,10 +139,10 @@ export default function Footer() {
               <div>
                 <span className="block text-xs text-cream/50">Email:</span>
                 <a
-                  href="mailto:hello@alsayyedah.in"
+                  href="mailto:hello@alsayyedah.us.ci"
                   className="text-sm text-cream hover:text-gold transition-colors break-all sm:break-normal"
                 >
-                  hello@alsayyedah.in
+                  hello@alsayyedah.us.ci
                 </a>
               </div>
               <p className="text-xs text-cream/50 pt-1">
